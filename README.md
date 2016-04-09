@@ -34,7 +34,7 @@ The following features will be comming soon in the next version:
 ## Wireframes
 
 * Images: @see /wireframes directory
-* PopApp Preview: https://popapp.in/w/projects/5703f3db9af2a124308b410d/preview
+* [PopApp Preview](https://popapp.in/w/projects/5703f3db9af2a124308b410d/preview)
 
 ## Authors
 

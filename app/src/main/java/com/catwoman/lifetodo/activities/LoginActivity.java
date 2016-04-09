@@ -1,7 +1,9 @@
-package com.catwoman.lifetodo;
+package com.catwoman.lifetodo.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.catwoman.lifetodo.R;
 
 public class LoginActivity extends AppCompatActivity {
 

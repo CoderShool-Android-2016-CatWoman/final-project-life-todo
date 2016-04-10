@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_item_plan"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:riv_mutate_background="true"
+        app:riv_corner_radius="20dp"
+        android:padding="8dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:id="@+id/ivThumb"
+        android:tint="@android:color/white"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvTitle"
+        android:textStyle="bold"
+        android:textColor="@color/colorTextDark"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/ivThumb"
+        android:layout_toEndOf="@+id/ivThumb"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/goal"
+        android:id="@+id/tvGoalLabel"
+        android:textColor="@color/colorTextDark"
+        android:layout_below="@+id/tvTitle"
+        android:layout_toRightOf="@+id/ivThumb"
+        android:layout_toEndOf="@+id/ivThumb" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvGoal"
+        android:textColor="@color/colorTextDark"
+        android:layout_alignBottom="@+id/tvGoalLabel"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvRemainingTime"
+        android:layout_below="@+id/tvGoal"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleY="2"
+        android:id="@+id/pbProgress"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/tvRemainingTime"
+        android:layout_toRightOf="@+id/ivThumb"
+        android:layout_toEndOf="@+id/ivThumb"
+        android:indeterminate="false" />
+</RelativeLayout>

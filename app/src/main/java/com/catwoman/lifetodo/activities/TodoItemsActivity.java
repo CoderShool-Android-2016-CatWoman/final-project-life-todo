@@ -32,6 +32,8 @@ public class TodoItemsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todo_items);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        toolbar.setTitle("Edit Item");
+
         //Item list view populate
         String itemType = "book";
         itemListViewPopulate(itemType);

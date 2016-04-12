@@ -1,6 +1,7 @@
 package com.catwoman.lifetodo.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.catwoman.lifetodo.R;
+import com.catwoman.lifetodo.activities.TodoItemsActivity;
 import com.catwoman.lifetodo.models.Category;
 
 import java.util.ArrayList;
@@ -47,10 +49,19 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
 
     @Override
     public void onBindViewHolder(CategoriesAdapter.ViewHolder holder, int position) {
-        Category category = categories.get(position);
+        final Category category = categories.get(position);
 
         holder.rlCategory.setBackgroundResource(category.getColorRes());
         holder.ivThumb.setImageResource(category.getThumbRes());
+
+        holder.ivThumb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, TodoItemsActivity.class);
+                intent.putExtra("category", category.getTitle());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

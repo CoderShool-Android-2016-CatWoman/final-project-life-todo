@@ -1,9 +1,18 @@
 <resources>
-    <string name="app_name">LifeTodo</string>
-    <string name="title_activity_home">HomeActivity</string>
+    <string name="app_name">Life Todo</string>
+    <string name="title_activity_home">Life Todo</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_todo_items">TodoItemsActivity</string>
     <string name="goal">Goal</string>
     <string name="_1_s_remaining">%1$s remaining</string>
+    <string name="add_plan">Add Plan</string>
+    <string-array name="category_array">
+        <item>Books</item>
+        <item>Places</item>
+        <item>Foods</item>
+        <item>Films</item>
+        <item>Friends</item>
+        <item>Moments</item>
+    </string-array>
 </resources>

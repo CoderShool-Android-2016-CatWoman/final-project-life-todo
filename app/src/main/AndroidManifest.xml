@@ -18,6 +18,7 @@
         <activity
             android:name=".activities.HomeActivity"
             android:label="@string/title_activity_home"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +29,15 @@
         <activity
             android:name=".activities.TodoItemsActivity"
             android:label="@string/title_activity_todo_items"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.AddPlanActivity"
+            android:label="@string/add_plan"
+            android:parentActivityName=".activities.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>

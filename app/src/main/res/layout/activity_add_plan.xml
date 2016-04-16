@@ -37,6 +37,7 @@
             android:hint="Plan Name"
             android:id="@+id/etName"
             android:textSize="20sp"
+            android:inputType="textCapSentences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </android.support.design.widget.TextInputLayout>

@@ -1,6 +1,7 @@
 package com.catwoman.lifetodo.activities;
 
 import android.content.Intent;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -14,21 +15,28 @@ import android.view.View;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.HomePagerAdapter;
+import com.catwoman.lifetodo.fragments.PlansFragment;
+import com.catwoman.lifetodo.models.Plan;
 
 public class HomeActivity extends AppCompatActivity {
 
+    static final int ADD_PLAN_REQUEST = 1;
+
     private HomePagerAdapter pagerAdapter;
     private ViewPager viewPager;
+    private AppBarLayout appbar;
+    private Toolbar toolbar;
     private TabLayout tabLayout;
-    FloatingActionButton fab;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        appbar = (AppBarLayout) findViewById(R.id.appbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
         pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
@@ -46,6 +54,14 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setListeners() {
+        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                float percentage = ((float) Math.abs(verticalOffset) / appBarLayout.getTotalScrollRange());
+                toolbar.setAlpha(1 - percentage);
+            }
+        });
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -67,9 +83,23 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, AddPlanActivity.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, ADD_PLAN_REQUEST);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADD_PLAN_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Plan plan = data.getParcelableExtra("plan");
+                PlansFragment fragment = (PlansFragment) getSupportFragmentManager()
+                        .findFragmentByTag("android:switcher:" + R.id.container + ":0");
+                if (null != fragment) {
+                    fragment.addItem(plan);
+                }
+            }
+        }
     }
 
     private void animateFab(int position) {

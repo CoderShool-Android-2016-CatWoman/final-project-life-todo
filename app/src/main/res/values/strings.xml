@@ -7,6 +7,12 @@
     <string name="goal">Goal</string>
     <string name="_1_s_remaining">%1$s remaining</string>
     <string name="add_plan">Add Plan</string>
+    <string name="save">Save</string>
+    <string name="meesage_no_plans">No plans found. Create one now!</string>
+    <string name="message_plan_added">Great! You have a new plan. Let\'s do it.</string>
+    <string name="error_missing_plan_name">Please input your plan.</string>
+    <string name="error_missing_plan_goal">Please input your goal.</string>
+    <string name="error_missing_plan_due_date">Please select a due date.</string>
     <string-array name="category_array">
         <item>Books</item>
         <item>Places</item>

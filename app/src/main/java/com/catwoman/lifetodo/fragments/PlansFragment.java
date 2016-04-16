@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.PlansAdapter;
@@ -19,6 +21,11 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by annt on 4/9/16.
@@ -27,8 +34,12 @@ public class PlansFragment extends Fragment {
     private ArrayList<Plan> plans;
     private PlansAdapter adapter;
     private LinearLayoutManager layoutManager;
+    Realm realm;
 
-    @Bind(R.id.rvPlans) RecyclerView rvPlans;
+    @Bind(R.id.tvMessage)
+    TextView tvMessage;
+    @Bind(R.id.rvPlans)
+    RecyclerView rvPlans;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +48,7 @@ public class PlansFragment extends Fragment {
         plans = new ArrayList<>();
         adapter = new PlansAdapter(plans);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        realm = Realm.getDefaultInstance();
     }
 
     @Nullable
@@ -53,28 +65,38 @@ public class PlansFragment extends Fragment {
     }
 
     private void populatePlans() {
-        plans.addAll(getPlans());
-        adapter.notifyDataSetChanged();
+        ArrayList<Plan> savedPlans = new ArrayList<>();
+        RealmResults<Plan> results = realm.where(Plan.class).findAllSorted("id", Sort.ASCENDING);
+        for (int i = 0; i < results.size(); i++) {
+            savedPlans.add(results.get(i));
+        }
+        if (0 == savedPlans.size()) {
+            tvMessage.setText(getString(R.string.meesage_no_plans));
+            tvMessage.setVisibility(View.VISIBLE);
+        } else {
+            plans.addAll(savedPlans);
+            adapter.notifyDataSetChanged();
+        }
     }
 
-    /**
-     * Get plans
-     * @TODO Load plans from database
-     * @return ArrayList<Plan>
-     */
-    public ArrayList<Plan> getPlans() {
-        ArrayList<Category> categories = new ArrayList<>();
-        categories.add(new Category(1, "Books", R.drawable.ic_book, R.color.colorDeepPurple));
-        categories.add(new Category(2, "Places", R.drawable.ic_travel, R.color.colorBlue));
-        categories.add(new Category(3, "Foods", R.drawable.ic_eat, R.color.colorRed));
-        categories.add(new Category(4, "Movies", R.drawable.ic_movie, R.color.colorTeal));
-        categories.add(new Category(5, "Friends", R.drawable.ic_people, R.color.colorAmber));
-        categories.add(new Category(6, "Moments", R.drawable.ic_calendar, R.color.colorPink));
+    public void addItem(Plan plan) {
+        int id;
+        try {
+            id = realm.where(Plan.class).max("id").intValue() + 1;
+        } catch (Exception e) {
+            id = 1;
+        }
+        plan.setId(id);
 
-        ArrayList<Plan> plans = new ArrayList<>();
-        plans.add(new Plan(1, "Crazy Reading", categories.get(0), 10, 6, 1461974400000L));
-        plans.add(new Plan(2, "Travels in 2016", categories.get(1), 6, 2, 1483142400000L));
-        plans.add(new Plan(3, "Unbelievable Challenge", categories.get(3), 1000, 6, 1775779200000L));
-        return plans;
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(plan);
+        realm.commitTransaction();
+
+        tvMessage.setVisibility(View.GONE);
+        plans.add(plan);
+        adapter.notifyItemInserted(plans.size() - 1);
+        rvPlans.scrollToPosition(plans.size() - 1);
+
+        Toast.makeText(getContext(), getString(R.string.message_plan_added), Toast.LENGTH_LONG).show();
     }
 }

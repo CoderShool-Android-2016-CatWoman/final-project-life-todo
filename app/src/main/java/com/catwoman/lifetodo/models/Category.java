@@ -3,10 +3,13 @@ package com.catwoman.lifetodo.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by annt on 4/9/16.
  */
-public class Category implements Parcelable {
+public class Category extends RealmObject implements Parcelable {
     private int id;
     private String title;
     private int thumbRes;

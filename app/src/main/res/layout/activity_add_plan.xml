@@ -34,7 +34,7 @@
         android:layout_alignParentStart="true">
 
         <EditText
-            android:hint="Plan Name"
+            android:hint="@string/hint_plan_name"
             android:id="@+id/etName"
             android:textSize="20sp"
             android:inputType="textCapSentences"
@@ -51,7 +51,7 @@
         android:layout_alignParentStart="true">
 
         <EditText
-            android:hint="Number of items to complete"
+            android:hint="@string/hint_plan_goal"
             android:id="@+id/etGoal"
             android:textSize="16sp"
             android:inputType="number"
@@ -68,7 +68,7 @@
         android:layout_alignParentStart="true">
 
         <EditText
-            android:hint="Due Date"
+            android:hint="@string/hint_plan_due_date"
             android:id="@+id/etDueDate"
             android:onClick="onEtDueDateClick"
             android:focusable="false"

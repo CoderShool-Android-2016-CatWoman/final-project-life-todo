@@ -10,19 +10,20 @@ import io.realm.annotations.PrimaryKey;
  * Created by annt on 4/9/16.
  */
 public class Category extends RealmObject implements Parcelable {
+    @PrimaryKey
     private int id;
     private String title;
-    private int thumbRes;
-    private int colorRes;
+    private String drawable;
+    private String color;
 
     public Category() {
     }
 
-    public Category(int id, String title, int thumbRes, int colorRes) {
+    public Category(int id, String title, String drawable, String color) {
         this.id = id;
         this.title = title;
-        this.thumbRes = thumbRes;
-        this.colorRes = colorRes;
+        this.drawable = drawable;
+        this.color = color;
     }
 
     public int getId() {
@@ -41,20 +42,20 @@ public class Category extends RealmObject implements Parcelable {
         this.title = title;
     }
 
-    public int getThumbRes() {
-        return thumbRes;
+    public String getDrawable() {
+        return drawable;
     }
 
-    public void setThumbRes(int thumbRes) {
-        this.thumbRes = thumbRes;
+    public void setDrawable(String drawable) {
+        this.drawable = drawable;
     }
 
-    public int getColorRes() {
-        return colorRes;
+    public String getColor() {
+        return color;
     }
 
-    public void setColorRes(int colorRes) {
-        this.colorRes = colorRes;
+    public void setColor(String color) {
+        this.color = color;
     }
 
     @Override
@@ -66,15 +67,15 @@ public class Category extends RealmObject implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
         dest.writeString(this.title);
-        dest.writeInt(this.thumbRes);
-        dest.writeInt(this.colorRes);
+        dest.writeString(this.drawable);
+        dest.writeString(this.color);
     }
 
     protected Category(Parcel in) {
         this.id = in.readInt();
         this.title = in.readString();
-        this.thumbRes = in.readInt();
-        this.colorRes = in.readInt();
+        this.drawable = in.readString();
+        this.color = in.readString();
     }
 
     public static final Creator<Category> CREATOR = new Creator<Category>() {

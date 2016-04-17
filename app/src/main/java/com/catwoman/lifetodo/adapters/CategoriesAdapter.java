@@ -51,8 +51,8 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
     public void onBindViewHolder(CategoriesAdapter.ViewHolder holder, int position) {
         final Category category = categories.get(position);
 
-        holder.rlCategory.setBackgroundResource(category.getColorRes());
-        holder.ivThumb.setImageResource(category.getThumbRes());
+        holder.ivThumb.setImageResource(context.getResources().getIdentifier("ic_" + category.getDrawable() + "_color_out",
+                        "drawable", context.getPackageName()));
 
         holder.ivThumb.setOnClickListener(new View.OnClickListener() {
             @Override

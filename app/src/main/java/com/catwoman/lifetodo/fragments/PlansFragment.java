@@ -34,7 +34,7 @@ public class PlansFragment extends Fragment {
     private ArrayList<Plan> plans;
     private PlansAdapter adapter;
     private LinearLayoutManager layoutManager;
-    Realm realm;
+    private Realm realm;
 
     @Bind(R.id.tvMessage)
     TextView tvMessage;

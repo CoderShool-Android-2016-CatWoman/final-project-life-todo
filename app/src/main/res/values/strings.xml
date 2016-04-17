@@ -8,17 +8,19 @@
     <string name="_1_s_remaining">%1$s remaining</string>
     <string name="add_plan">Add Plan</string>
     <string name="save">Save</string>
+    <string name="hint_plan_name">Plan Name</string>
+    <string name="hint_plan_goal">Number of items to complete</string>
+    <string name="hint_plan_due_date">Due Date</string>
     <string name="meesage_no_plans">No plans found. Create one now!</string>
     <string name="message_plan_added">Great! You have a new plan. Let\'s do it.</string>
     <string name="error_missing_plan_name">Please input your plan.</string>
     <string name="error_missing_plan_goal">Please input your goal.</string>
     <string name="error_missing_plan_due_date">Please select a due date.</string>
-    <string-array name="category_array">
-        <item>Books</item>
-        <item>Places</item>
-        <item>Foods</item>
-        <item>Films</item>
-        <item>Friends</item>
-        <item>Moments</item>
-    </string-array>
+    <string name="menu_edit_plan">Edit Plan</string>
+    <string name="menu_delete_plan">Delete Plan</string>
+    <string name="message_completed">Completed</string>
+    <string name="number_items_to_go">%1$s items to go</string>
+    <string name="your_goal_is_number_items">Your goal is %1$s items.</string>
+    <string name="label_plan_due_date">Due:</string>
+    <string name="title_activity_plan">PlanActivity</string>
 </resources>

@@ -1,27 +1,25 @@
 package com.catwoman.lifetodo.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.catwoman.lifetodo.R;
+import com.catwoman.lifetodo.activities.PlanActivity;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -33,7 +31,7 @@ public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> 
     private ArrayList<Plan> plans;
     private Context context;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @Bind(R.id.ivThumb) RoundedImageView ivThumb;
         @Bind(R.id.tvTitle) TextView tvTitle;
         @Bind(R.id.tvGoal) TextView tvGoal;
@@ -43,6 +41,17 @@ public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getLayoutPosition();
+            Plan plan = plans.get(position);
+            Intent intent = new Intent(context, PlanActivity.class);
+            intent.putExtra("plan", plan);
+            context.startActivity(intent);
         }
     }
 
@@ -62,13 +71,23 @@ public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> 
         Plan plan = plans.get(position);
         Category category = plan.getCategory();
 
-        holder.ivThumb.setImageResource(category.getThumbRes());
-        holder.ivThumb.setBackgroundResource(category.getColorRes());
+        holder.ivThumb.setImageResource(context.getResources().getIdentifier("ic_" + category.getDrawable() + "_color_out",
+                "drawable", context.getPackageName()));
         holder.tvTitle.setText(plan.getTitle());
         holder.tvGoal.setText(String.valueOf(plan.getGoal()));
-        holder.tvRemainingTime.setText(getStringRemaining(plan.getDueTime()));
+        // @TODO Calculate progress
+        // dummy progress
+        int progress = 1;
+        if (progress == plan.getGoal()) {
+            holder.tvRemainingTime.setText(context.getString(R.string.message_completed));
+        } else {
+            holder.tvRemainingTime.setText(getStringRemaining(plan.getDueTime()));
+        }
         holder.pbProgress.setMax(plan.getGoal());
-        holder.pbProgress.setProgress(plan.getProgress());
+        holder.pbProgress.getProgressDrawable().setColorFilter(context.getResources().getColor(
+                context.getResources().getIdentifier("color" + plan.getCategory().getColor(), "color",
+                        context.getPackageName())), android.graphics.PorterDuff.Mode.SRC_IN);
+        holder.pbProgress.setProgress(progress);
     }
 
     @Override

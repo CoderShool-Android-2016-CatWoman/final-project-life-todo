@@ -39,4 +39,5 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile 'com.txusballesteros:FitChart:1.0'
 }

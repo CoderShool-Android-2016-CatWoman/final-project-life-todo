@@ -24,10 +24,15 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class AddPlanActivity extends AppCompatActivity
         implements DatePickerFragment.DatePickerFragmentListener {
     private long dueTimeInMillis = 0;
+    private Realm realm;
+    private ArrayList<Category> categories;
 
     @Bind(R.id.spCategory)
     Spinner spCategory;
@@ -45,13 +50,25 @@ public class AddPlanActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
+        realm = Realm.getDefaultInstance();
+        categories = new ArrayList<>();
+        RealmResults<Category> results = realm.where(Category.class).findAllSorted("id", Sort.ASCENDING);
+        for (int i = 0; i < results.size(); i++) {
+            categories.add(results.get(i));
+        }
+
         populateView();
     }
 
     private void populateView() {
         // spinner
-        ArrayAdapter<CharSequence> categoriesAdapter = ArrayAdapter.createFromResource(this,
-                R.array.category_array, android.R.layout.simple_spinner_item);
+        String[] categoryArray = new String[categories.size()];
+        for (int i = 0; i < categories.size(); i++) {
+            categoryArray[i] = categories.get(i).getTitle();
+        }
+
+        ArrayAdapter<String> categoriesAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, categoryArray);
         categoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategory.setAdapter(categoriesAdapter);
     }
@@ -89,15 +106,6 @@ public class AddPlanActivity extends AppCompatActivity
         }
 
         Plan plan = new Plan();
-
-        // @TODO Load categories from database
-        ArrayList<Category> categories = new ArrayList<>();
-        categories.add(new Category(1, "Books", R.drawable.ic_book, R.color.colorDeepPurple));
-        categories.add(new Category(2, "Places", R.drawable.ic_travel, R.color.colorBlue));
-        categories.add(new Category(3, "Foods", R.drawable.ic_eat, R.color.colorRed));
-        categories.add(new Category(4, "Movies", R.drawable.ic_movie, R.color.colorTeal));
-        categories.add(new Category(5, "Friends", R.drawable.ic_people, R.color.colorAmber));
-        categories.add(new Category(6, "Moments", R.drawable.ic_calendar, R.color.colorPink));
 
         Category category = categories.get(spCategory.getSelectedItemPosition());
         plan.setCategory(category);

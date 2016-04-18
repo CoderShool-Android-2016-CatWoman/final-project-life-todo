@@ -1,8 +1,7 @@
 package com.catwoman.lifetodo.activities;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.fragments.DatePickerFragment;
@@ -18,7 +18,6 @@ import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,7 +31,9 @@ public class AddPlanActivity extends AppCompatActivity
         implements DatePickerFragment.DatePickerFragmentListener {
     private long dueTimeInMillis = 0;
     private Realm realm;
-    private ArrayList<Category> categories;
+    private RealmResults<Category> categories;
+    private boolean isEdit = false;
+    private Plan plan;
 
     @Bind(R.id.spCategory)
     Spinner spCategory;
@@ -51,16 +52,24 @@ public class AddPlanActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         realm = Realm.getDefaultInstance();
-        categories = new ArrayList<>();
-        RealmResults<Category> results = realm.where(Category.class).findAllSorted("id", Sort.ASCENDING);
-        for (int i = 0; i < results.size(); i++) {
-            categories.add(results.get(i));
+        categories = realm.where(Category.class).findAllSorted("id", Sort.ASCENDING);
+
+        int id = getIntent().getIntExtra("id", 0);
+        if (0 != id) {
+            plan = realm.where(Plan.class).equalTo("id", id).findFirst();
+            if (null == plan) {
+                Toast.makeText(this, R.string.error_plan_not_found, Toast.LENGTH_LONG).show();
+                finish();
+            }
+
+            isEdit = true;
+            getSupportActionBar().setTitle(getString(R.string.edit_plan));
         }
 
-        populateView();
+        populateViews();
     }
 
-    private void populateView() {
+    private void populateViews() {
         // spinner
         String[] categoryArray = new String[categories.size()];
         for (int i = 0; i < categories.size(); i++) {
@@ -71,6 +80,23 @@ public class AddPlanActivity extends AppCompatActivity
                 android.R.layout.simple_spinner_item, categoryArray);
         categoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategory.setAdapter(categoriesAdapter);
+
+        if (isEdit) {
+            populateValues();
+        }
+    }
+
+    private void populateValues() {
+        for (int i = 0; i < categories.size(); i++) {
+            if (plan.getCategory().getId() == categories.get(i).getId()) {
+                spCategory.setSelection(i);
+            }
+        }
+
+        etName.setText(plan.getTitle());
+        etGoal.setText(String.valueOf(plan.getGoal()));
+        dueTimeInMillis = plan.getDueTime();
+        etDueDate.setText(getDateString(dueTimeInMillis, "MM-dd-yyyy"));
     }
 
     public void onEtDueDateClick(View v) {
@@ -105,7 +131,18 @@ public class AddPlanActivity extends AppCompatActivity
             return;
         }
 
-        Plan plan = new Plan();
+        realm.beginTransaction();
+
+        if (!isEdit) {
+            int id;
+            try {
+                id = realm.where(Plan.class).max("id").intValue() + 1;
+            } catch (Exception e) {
+                id = 1;
+            }
+            plan = realm.createObject(Plan.class);
+            plan.setId(id);
+        }
 
         Category category = categories.get(spCategory.getSelectedItemPosition());
         plan.setCategory(category);
@@ -113,9 +150,10 @@ public class AddPlanActivity extends AppCompatActivity
         plan.setGoal(Integer.valueOf(etGoal.getText().toString()));
         plan.setDueTime(dueTimeInMillis);
 
-        Intent intent = new Intent();
-        intent.putExtra("plan", plan);
-        setResult(RESULT_OK, intent);
+        realm.commitTransaction();
+
+        String message = getString(isEdit ? R.string.message_plan_updated : R.string.message_plan_added);
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         finish();
     }
 

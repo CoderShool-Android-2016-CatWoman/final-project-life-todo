@@ -2,7 +2,6 @@ package com.catwoman.lifetodo.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,25 +17,30 @@ import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 
 /**
  * Created by annt on 4/9/16.
  */
 public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> {
-    private ArrayList<Plan> plans;
+    private RealmResults<Plan> plans;
     private Context context;
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @Bind(R.id.ivThumb) RoundedImageView ivThumb;
-        @Bind(R.id.tvTitle) TextView tvTitle;
-        @Bind(R.id.tvGoal) TextView tvGoal;
-        @Bind(R.id.tvRemainingTime) TextView tvRemainingTime;
-        @Bind(R.id.pbProgress) ProgressBar pbProgress;
+        @Bind(R.id.ivThumb)
+        RoundedImageView ivThumb;
+        @Bind(R.id.tvTitle)
+        TextView tvTitle;
+        @Bind(R.id.tvGoal)
+        TextView tvGoal;
+        @Bind(R.id.tvRemainingTime)
+        TextView tvRemainingTime;
+        @Bind(R.id.pbProgress)
+        ProgressBar pbProgress;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -50,12 +54,12 @@ public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> 
             int position = getLayoutPosition();
             Plan plan = plans.get(position);
             Intent intent = new Intent(context, PlanActivity.class);
-            intent.putExtra("plan", plan);
+            intent.putExtra("id", plan.getId());
             context.startActivity(intent);
         }
     }
 
-    public PlansAdapter(ArrayList<Plan> plans) {
+    public PlansAdapter(RealmResults<Plan> plans) {
         this.plans = plans;
     }
 

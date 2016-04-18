@@ -1,12 +1,17 @@
 package com.catwoman.lifetodo.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.models.Plan;
@@ -20,9 +25,12 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
 
 public class PlanActivity extends AppCompatActivity {
     private Plan plan;
+    private Realm realm;
 
     @Bind(R.id.tvName)
     TextView tvName;
@@ -44,10 +52,35 @@ public class PlanActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
-        plan = getIntent().getParcelableExtra("plan");
-        getSupportActionBar().setTitle(plan.getTitle());
+        realm = Realm.getDefaultInstance();
 
+        int id = getIntent().getIntExtra("id", 0);
+        plan = realm.where(Plan.class).equalTo("id", id).findFirst();
+        if (null == plan) {
+            Toast.makeText(this, R.string.error_plan_not_found, Toast.LENGTH_LONG).show();
+            finish();
+        }
+
+        setListeners();
         populateViews();
+    }
+
+    private void setListeners() {
+        plan.addChangeListener(new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                populateViews();
+            }
+        });
+
+        fcProgress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PlanActivity.this, TodoItemsActivity.class);
+                intent.putExtra("category", plan.getCategory().getTitle());
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -64,19 +97,40 @@ public class PlanActivity extends AppCompatActivity {
                 editPlan();
                 return true;
             case R.id.miDelete:
-                deletePlan();
+                confirmDeletePlan();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void deletePlan() {
+    private void confirmDeletePlan() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.confirm_delete_plan_title))
+                .setMessage(getString(R.string.confirm_delete_plan_message))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deletePlan();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null);
+        builder.show();
+    }
 
+    private void deletePlan() {
+        realm.beginTransaction();
+        plan.removeFromRealm();
+        realm.commitTransaction();
+
+        Toast.makeText(this, getString(R.string.message_plan_has_been_deleted), Toast.LENGTH_LONG).show();
+        finish();
     }
 
     private void editPlan() {
-
+        Intent intent = new Intent(this, AddPlanActivity.class);
+        intent.putExtra("id", plan.getId());
+        startActivity(intent);
     }
 
     /**
@@ -84,14 +138,15 @@ public class PlanActivity extends AppCompatActivity {
      */
     private void populateViews() {
         // dummy progress
-        plan.setProgress(1);
+        int progress = 1;
 
+        getSupportActionBar().setTitle(plan.getTitle());
         tvName.setText(plan.getTitle());
 
         ivThumb.setImageResource(getResources().getIdentifier("ic_" + plan.getCategory().getDrawable() + "_color_full",
                 "drawable", getPackageName()));
 
-        int remainingItems = plan.getGoal() - plan.getProgress();
+        int remainingItems = plan.getGoal() - progress;
         if (0 == remainingItems) {
             tvRemainingItems.setText(getString(R.string.message_completed));
         } else {
@@ -103,7 +158,7 @@ public class PlanActivity extends AppCompatActivity {
         fcProgress.setMinValue(0f);
         fcProgress.setMaxValue(plan.getGoal());
         Collection<FitChartValue> values = new ArrayList<>();
-        values.add(new FitChartValue(plan.getProgress(), getResources().getColor(
+        values.add(new FitChartValue(progress, getResources().getColor(
                 getResources().getIdentifier("color" + plan.getCategory().getColor(), "color", getPackageName()))));
         fcProgress.setValues(values);
 

@@ -2,7 +2,6 @@ package com.catwoman.lifetodo.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,29 +13,41 @@ import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.activities.TodoItemsActivity;
 import com.catwoman.lifetodo.models.Category;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.RealmResults;
 
 /**
  * Created by annt on 4/9/16.
  */
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.ViewHolder> {
-    private ArrayList<Category> categories;
+    private RealmResults<Category> categories;
     private Context context;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.rlCategory) RelativeLayout rlCategory;
-        @Bind(R.id.ivThumb) ImageView ivThumb;
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @Bind(R.id.rlCategory)
+        RelativeLayout rlCategory;
+        @Bind(R.id.ivThumb)
+        ImageView ivThumb;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getLayoutPosition();
+            Category category = categories.get(position);
+            Intent intent = new Intent(context, TodoItemsActivity.class);
+            intent.putExtra("category", category.getTitle());
+            context.startActivity(intent);
         }
     }
 
-    public CategoriesAdapter(ArrayList<Category> categories) {
+    public CategoriesAdapter(RealmResults<Category> categories) {
         this.categories = categories;
     }
 
@@ -52,16 +63,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         final Category category = categories.get(position);
 
         holder.ivThumb.setImageResource(context.getResources().getIdentifier("ic_" + category.getDrawable() + "_color_out",
-                        "drawable", context.getPackageName()));
-
-        holder.ivThumb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, TodoItemsActivity.class);
-                intent.putExtra("category", category.getTitle());
-                context.startActivity(intent);
-            }
-        });
+                "drawable", context.getPackageName()));
     }
 
     @Override

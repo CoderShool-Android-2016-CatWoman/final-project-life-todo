@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/Users/txus/Documents/repositories/fit-chart/FitChart/src/main/res/values/colors.xml -->
+    <eat-comment/>
+    <color name="default_back_color">@android:color/transparent</color>
+    <color name="default_back_stroke_color">#f0f0f0</color>
+    <color name="default_chart_value_color">#ff3d00</color>
+    <declare-styleable name="FitChart"><attr format="dimension|reference" name="strokeSize"/><attr format="color|reference" name="valueStrokeColor"/><attr format="color|reference" name="backStrokeColor"/><attr name="animationMode"><enum name="linear" value="0"/><enum name="overdraw" value="1"/></attr></declare-styleable>
+    <!-- From: file:/Users/txus/Documents/repositories/fit-chart/FitChart/src/main/res/values/dimens.xml -->
+    <eat-comment/>
+    <dimen name="default_stroke_size">18dp</dimen>
+    <!-- From: file:/Users/txus/Documents/repositories/fit-chart/FitChart/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="app_name">FitChart for Android</string>
+</resources>

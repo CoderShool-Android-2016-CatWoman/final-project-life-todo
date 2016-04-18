@@ -1,0 +1,16 @@
+int attr animationMode 0x7f010003
+int attr backStrokeColor 0x7f010002
+int attr strokeSize 0x7f010000
+int attr valueStrokeColor 0x7f010001
+int color default_back_color 0x7f020000
+int color default_back_stroke_color 0x7f020001
+int color default_chart_value_color 0x7f020002
+int dimen default_stroke_size 0x7f030000
+int id linear 0x7f050000
+int id overdraw 0x7f050001
+int string app_name 0x7f040000
+int[] styleable FitChart { 0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003 }
+int styleable FitChart_animationMode 3
+int styleable FitChart_backStrokeColor 2
+int styleable FitChart_strokeSize 0
+int styleable FitChart_valueStrokeColor 1

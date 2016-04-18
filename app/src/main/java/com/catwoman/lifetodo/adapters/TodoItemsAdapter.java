@@ -29,6 +29,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
     private EndlessScrollListener endlessScrollListener;
     private DeleteItemListener deleteItemListener;
 
+
     public void setEndlessScrollListener(EndlessScrollListener endlessScrollListener) {
         this.endlessScrollListener = endlessScrollListener;
     }
@@ -99,15 +100,22 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         viewHolder.ivThumbUrl.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                 viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
-                item.setItemStatus("Done");
+
+                if(item.getItemStatus() == "Done"){
+                    item.setItemStatus("InProgress");
+                    viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+                }
+                else {
+                    item.setItemStatus("Done");
+                    viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
+                }
             }
         });
 
         viewHolder.ivThumbUrl.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                deleteItemListener.deleteItem(position);
+                deleteItemListener.deleteItem(position, item.getItemName());
                 return false;
             }
         });

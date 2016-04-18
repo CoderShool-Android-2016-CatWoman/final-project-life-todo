@@ -9,5 +9,5 @@ public interface DeleteItemListener {
      * Loads more data.
      * @param position
      */
-    public void deleteItem(int position);
+    public void deleteItem(int position, String itemName);
 }

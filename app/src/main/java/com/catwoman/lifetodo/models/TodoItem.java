@@ -1,12 +1,27 @@
 package com.catwoman.lifetodo.models;
 
-import java.util.ArrayList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class TodoItem {
+public class TodoItem extends RealmObject {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @PrimaryKey
+    private int id;
     private String itemName;
     private String itemThumbUrl;
     private String itemStatus;
     private String itemDescription;
+
+    public TodoItem(){
+
+    }
 
     public TodoItem(String itemName, String itemThumbUrl, String itemStatus, String itemDescription) {
         this.itemName = itemName;
@@ -45,23 +60,6 @@ public class TodoItem {
 
     public void setItemDescription(String itemDescription) {
         this.itemDescription = itemDescription;
-    }
-
-    private static int lastContactId = 0;
-
-    public static ArrayList<TodoItem> createItemsList(int numItems) {
-        ArrayList<TodoItem> items = new ArrayList<TodoItem>();
-
-        for (int i = 1; i <= numItems; i++) {
-            if (i>10) {
-                items.add(new TodoItem("name", "thumb", "Done", "has"));
-            }
-            else{
-                items.add(new TodoItem("name", "thumb", "Progress", "has"));
-            }
-        }
-
-        return items;
     }
 
 }

@@ -15,37 +15,37 @@ import android.view.View;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.HomePagerAdapter;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class HomeActivity extends AppCompatActivity {
-
-    static final int ADD_PLAN_REQUEST = 1;
-
     private HomePagerAdapter pagerAdapter;
-    private ViewPager viewPager;
-    private AppBarLayout appbar;
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private FloatingActionButton fab;
+
+    @Bind(R.id.appbar)
+    AppBarLayout appbar;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.container)
+    ViewPager viewPager;
+    @Bind(R.id.tabs)
+    TabLayout tabLayout;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        appbar = (AppBarLayout) findViewById(R.id.appbar);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
 
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
         pagerAdapter = new HomePagerAdapter(getSupportFragmentManager());
-
         // Set up the ViewPager with the sections adapter.
-        viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(pagerAdapter);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-
-        fab = (FloatingActionButton) findViewById(R.id.fab);
 
         setListeners();
     }

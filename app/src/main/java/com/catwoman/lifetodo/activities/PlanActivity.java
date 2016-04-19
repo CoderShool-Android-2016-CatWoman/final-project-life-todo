@@ -77,7 +77,7 @@ public class PlanActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(PlanActivity.this, TodoItemsActivity.class);
-                intent.putExtra("category", plan.getCategory().getTitle());
+                intent.putExtra("categoryId", plan.getCategory().getId());
                 startActivity(intent);
             }
         });

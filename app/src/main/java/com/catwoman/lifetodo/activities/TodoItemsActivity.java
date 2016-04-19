@@ -114,6 +114,8 @@ public class TodoItemsActivity extends AppCompatActivity {
                 realm.copyToRealmOrUpdate(itemCurr);
                 realm.commitTransaction();
 
+                itemsData.set(position,itemCurr);
+
                 adapterItem.notifyItemChanged(position);
             }
         });

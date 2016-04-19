@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.catwoman.lifetodo.R;
@@ -15,6 +14,7 @@ import com.catwoman.lifetodo.adapters.TodoItemsAdapter;
 import com.catwoman.lifetodo.fragments.AddTextFragment;
 import com.catwoman.lifetodo.interfaces.AddItemListener;
 import com.catwoman.lifetodo.interfaces.DeleteItemListener;
+import com.catwoman.lifetodo.interfaces.EditItemListener;
 import com.catwoman.lifetodo.interfaces.EndlessScrollListener;
 import com.catwoman.lifetodo.models.TodoItem;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -91,14 +91,30 @@ public class TodoItemsActivity extends AppCompatActivity {
         adapterItem.setDeleteItemListener(new DeleteItemListener() {
             @Override
             public void deleteItem(int position, String itemName) {
-                TodoItem itemDlete = realm.where(TodoItem.class).equalTo("itemName",itemName).findFirst();
+                TodoItem itemDelete = realm.where(TodoItem.class).equalTo("itemName", itemName).findFirst();
 
                 realm.beginTransaction();
-                itemDlete.removeFromRealm();
+                itemDelete.removeFromRealm();
                 realm.commitTransaction();
 
                 itemsData.remove(position);
                 adapterItem.notifyItemRemoved(position);
+            }
+        });
+
+        adapterItem.setEditItemListener(new EditItemListener() {
+            @Override
+            public void EditItem(int position,String itemName, String itemStatus) {
+                //TodoItem itemEdit = new TodoItem();
+                TodoItem itemCurr = realm.where(TodoItem.class).equalTo("itemName", itemName).findFirst();
+
+                realm.beginTransaction();
+                //itemCurr.setId(itemCurr.getId());
+                itemCurr.setItemStatus(itemStatus);
+                realm.copyToRealmOrUpdate(itemCurr);
+                realm.commitTransaction();
+
+                adapterItem.notifyItemChanged(position);
             }
         });
 
@@ -154,7 +170,7 @@ public class TodoItemsActivity extends AppCompatActivity {
 
             @Override
             public void AddItem(String itemName) {
-                Log.d("Debug", "AddItem: " + itemName);
+                //Log.d("Debug", "AddItem: " + itemName);
                 TodoItem item = new TodoItem();
                 int id;
 

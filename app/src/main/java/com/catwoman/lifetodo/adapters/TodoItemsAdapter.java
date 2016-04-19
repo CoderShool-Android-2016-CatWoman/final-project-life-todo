@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.interfaces.DeleteItemListener;
+import com.catwoman.lifetodo.interfaces.EditItemListener;
 import com.catwoman.lifetodo.interfaces.EndlessScrollListener;
 import com.catwoman.lifetodo.models.TodoItem;
 
@@ -28,7 +29,11 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
 
     private EndlessScrollListener endlessScrollListener;
     private DeleteItemListener deleteItemListener;
+    private EditItemListener editItemListener;
 
+    public void setEditItemListener(EditItemListener editItemListener) {
+        this.editItemListener = editItemListener;
+    }
 
     public void setEndlessScrollListener(EndlessScrollListener endlessScrollListener) {
         this.endlessScrollListener = endlessScrollListener;
@@ -91,24 +96,25 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         viewHolder.tvName.setText(item.getItemName());
         viewHolder.ivThumbUrl.setImageResource(R.drawable.iconbook);
 
-
-        if(item.getItemStatus() == "Done"){
+        if(item.getItemStatus().equals("Done")){
             viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
-
         }
 
         viewHolder.ivThumbUrl.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
 
-                if(item.getItemStatus() == "Done"){
-                    item.setItemStatus("InProgress");
+                String itemStatus;
+                if(item.getItemStatus().equals("Done")){
+                    itemStatus = "InProgress";
                     viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
                 }
                 else {
-                    item.setItemStatus("Done");
+                    itemStatus = "Done";
                     viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
                 }
+                //item.setItemStatus(itemStatus);
+                editItemListener.EditItem(position,item.getItemName(),itemStatus);
             }
         });
 

@@ -42,7 +42,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
             int position = getLayoutPosition();
             Category category = categories.get(position);
             Intent intent = new Intent(context, TodoItemsActivity.class);
-            intent.putExtra("category", category.getTitle());
+            intent.putExtra("categoryId", category.getId());
             context.startActivity(intent);
         }
     }

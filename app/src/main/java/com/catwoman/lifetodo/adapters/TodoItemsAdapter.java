@@ -56,6 +56,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         // for any view that will be set as you render a row
 
         public TextView tvName;
+        public TextView tvStatus;
         public ImageView ivThumbUrl;
         public CardView cvItem;
 
@@ -99,6 +100,9 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         if(item.getItemStatus().equals("Done")){
             viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
         }
+        else{
+            viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+        }
 
         viewHolder.ivThumbUrl.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -108,12 +112,12 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
                 if(item.getItemStatus().equals("Done")){
                     itemStatus = "InProgress";
                     viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+
                 }
                 else {
                     itemStatus = "Done";
                     viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
                 }
-                //item.setItemStatus(itemStatus);
                 editItemListener.EditItem(position,item.getItemName(),itemStatus);
             }
         });

@@ -49,10 +49,7 @@ public class PlansFragment extends Fragment {
         rvPlans.setAdapter(adapter);
         rvPlans.setLayoutManager(layoutManager);
 
-        if (0 == plans.size()) {
-            tvMessage.setText(getString(R.string.meesage_no_plans));
-            tvMessage.setVisibility(View.VISIBLE);
-        }
+        toggleMessage();
 
         setListeners();
         return view;
@@ -62,10 +59,15 @@ public class PlansFragment extends Fragment {
         RealmChangeListener changeListener = new RealmChangeListener() {
             @Override
             public void onChange() {
+                toggleMessage();
                 adapter.notifyDataSetChanged();
             }
         };
 
         plans.addChangeListener(changeListener);
+    }
+
+    private void toggleMessage() {
+        tvMessage.setVisibility(0 == plans.size() ? View.VISIBLE : View.GONE);
     }
 }

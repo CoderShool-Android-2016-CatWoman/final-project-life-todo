@@ -13,6 +13,7 @@ import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.activities.PlanActivity;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
+import com.catwoman.lifetodo.models.TodoItem;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -21,6 +22,7 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
@@ -79,10 +81,15 @@ public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> 
                 "drawable", context.getPackageName()));
         holder.tvTitle.setText(plan.getTitle());
         holder.tvGoal.setText(String.valueOf(plan.getGoal()));
-        // @TODO Calculate progress
-        // dummy progress
-        int progress = 1;
-        if (progress == plan.getGoal()) {
+
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<TodoItem> doneItems = realm
+                .where(TodoItem.class)
+                .equalTo("category.id", plan.getCategory().getId())
+                .equalTo("itemStatus", "Done")
+                .findAll();
+        int progress = doneItems.size();
+        if (progress >= plan.getGoal()) {
             holder.tvRemainingTime.setText(context.getString(R.string.message_completed));
         } else {
             holder.tvRemainingTime.setText(getStringRemaining(plan.getDueTime()));

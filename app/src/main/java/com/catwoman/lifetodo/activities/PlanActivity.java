@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.models.Plan;
+import com.catwoman.lifetodo.models.TodoItem;
 import com.txusballesteros.widgets.FitChart;
 import com.txusballesteros.widgets.FitChartValue;
 
@@ -27,10 +28,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 
 public class PlanActivity extends AppCompatActivity {
-    private Plan plan;
     private Realm realm;
+    private Plan plan;
+    private RealmResults<TodoItem> doneItems;
 
     @Bind(R.id.tvName)
     TextView tvName;
@@ -61,12 +64,25 @@ public class PlanActivity extends AppCompatActivity {
             finish();
         }
 
+        doneItems = realm
+                .where(TodoItem.class)
+                .equalTo("category.id", plan.getCategory().getId())
+                .equalTo("itemStatus", "Done")
+                .findAll();
+
         setListeners();
         populateViews();
     }
 
     private void setListeners() {
         plan.addChangeListener(new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                populateViews();
+            }
+        });
+
+        doneItems.addChangeListener(new RealmChangeListener() {
             @Override
             public void onChange() {
                 populateViews();
@@ -133,21 +149,17 @@ public class PlanActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * @TODO Calculate progress
-     */
     private void populateViews() {
-        // dummy progress
-        int progress = 1;
-
         getSupportActionBar().setTitle(plan.getTitle());
         tvName.setText(plan.getTitle());
 
         ivThumb.setImageResource(getResources().getIdentifier("ic_" + plan.getCategory().getDrawable() + "_color_full",
                 "drawable", getPackageName()));
 
+        int progress = doneItems.size();
+
         int remainingItems = plan.getGoal() - progress;
-        if (0 == remainingItems) {
+        if (0 >= remainingItems) {
             tvRemainingItems.setText(getString(R.string.message_completed));
         } else {
             tvRemainingItems.setText(getString(R.string.number_items_to_go, remainingItems));

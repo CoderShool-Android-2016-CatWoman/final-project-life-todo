@@ -15,18 +15,16 @@ public class Plan extends RealmObject implements Parcelable {
     private String title;
     private Category category;
     private int goal;
-    private int progress;
     private long dueTime;
 
     public Plan() {
     }
 
-    public Plan(int id, String title, Category category, int goal, int progress, long dueTime) {
+    public Plan(int id, String title, Category category, int goal, long dueTime) {
         this.id = id;
         this.title = title;
         this.category = category;
         this.goal = goal;
-        this.progress = progress;
         this.dueTime = dueTime;
     }
 
@@ -62,14 +60,6 @@ public class Plan extends RealmObject implements Parcelable {
         this.goal = goal;
     }
 
-    public int getProgress() {
-        return progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
-
     public long getDueTime() {
         return dueTime;
     }
@@ -89,7 +79,6 @@ public class Plan extends RealmObject implements Parcelable {
         dest.writeString(this.title);
         dest.writeParcelable(this.category, flags);
         dest.writeInt(this.goal);
-        dest.writeInt(this.progress);
         dest.writeLong(this.dueTime);
     }
 
@@ -98,7 +87,6 @@ public class Plan extends RealmObject implements Parcelable {
         this.title = in.readString();
         this.category = in.readParcelable(Category.class.getClassLoader());
         this.goal = in.readInt();
-        this.progress = in.readInt();
         this.dueTime = in.readLong();
     }
 

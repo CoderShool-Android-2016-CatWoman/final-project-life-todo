@@ -27,12 +27,12 @@ public class LifeTodoApplication extends Application {
         Realm realm = Realm.getDefaultInstance();
 
         ArrayList<Category> categories = new ArrayList<>();
-        categories.add(new Category(1, "Books", "book", "DeepPurple"));
-        categories.add(new Category(2, "Places", "travel", "Blue"));
-        categories.add(new Category(3, "Foods", "eat", "Red"));
-        categories.add(new Category(4, "Movies", "movie", "Teal"));
-        categories.add(new Category(5, "Friends", "people", "Amber"));
-        categories.add(new Category(6, "Moments", "calendar", "Pink"));
+        categories.add(new Category(1, "book", "Books", "book", "DeepPurple"));
+        categories.add(new Category(2, "place", "Places", "travel", "Blue"));
+        categories.add(new Category(3, "food", "Foods", "eat", "Red"));
+        categories.add(new Category(4, "movie", "Movies", "movie", "Teal"));
+        categories.add(new Category(5, "friend", "Friends", "people", "Amber"));
+        categories.add(new Category(6, "moment", "Moments", "calendar", "Pink"));
 
         realm.beginTransaction();
         for (int i = 0; i < categories.size(); i++) {

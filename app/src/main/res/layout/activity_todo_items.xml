@@ -28,14 +28,16 @@
 
     <!-- View to show the alpha background -->
     <View
-        android:id="@+id/shadowView"
+        android:id="@+id/vOverlay"
+        android:onClick="collapseFAM"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background"
+        android:alpha="0.7"
         android:visibility="gone" />
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/multiple_actions_up"
+        android:id="@+id/famAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
@@ -47,39 +49,45 @@
         fab:fab_labelStyle="@style/menu_labels_style">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnAddMovie"
+            android:id="@+id/fabAddLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_title="Add Ya Movie"
+            android:onClick="showAddLocation"
+            android:visibility="gone"
+            fab:fab_icon="@drawable/ic_location_on_white_24dp"
+            fab:fab_title="Location"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_colorPressed="@color/colorPrimaryLight"
             fab:fab_size="mini"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnAddDish"
+            android:id="@+id/fabAddCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_title="Add Ya Dish"
+            fab:fab_icon="@drawable/ic_photo_camera_white_24dp"
+            fab:fab_title="Camera"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_colorPressed="@color/colorPrimaryLight"
             fab:fab_size="mini"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnAddPlace"
+            android:id="@+id/fabAddPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_title="Add Ya Place"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_icon="@drawable/ic_insert_photo_white_24dp"
+            fab:fab_title="Photo"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_colorPressed="@color/colorPrimaryLight"
             fab:fab_size="mini"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnAddBook"
+            android:id="@+id/fabAddText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_title="Add Ya Book"
-            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_icon="@drawable/ic_edit_white_24dp"
+            fab:fab_title="Text"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_colorPressed="@color/colorPrimaryLight"
             fab:fab_size="mini"/>
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

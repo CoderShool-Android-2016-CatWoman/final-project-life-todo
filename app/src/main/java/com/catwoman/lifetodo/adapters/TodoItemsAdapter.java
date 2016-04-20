@@ -18,13 +18,16 @@ import com.catwoman.lifetodo.models.TodoItem;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 /**
  * Created by annt on 4/9/16.
  */
 public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.ViewHolder> {
 
     // Store a member variable for the articles
-    private ArrayList<TodoItem> mItemsData;
+    private RealmResults<TodoItem> mItemsData;
     private String mitemStyle;
 
     private EndlessScrollListener endlessScrollListener;
@@ -44,7 +47,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
     }
 
     // Pass in the contact array into the constructor
-    public TodoItemsAdapter(ArrayList<TodoItem> itemsData, String itemStyle) {
+    public TodoItemsAdapter(RealmResults<TodoItem> itemsData, String itemStyle) {
         mItemsData = itemsData;
         mitemStyle = itemStyle;
     }

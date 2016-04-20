@@ -12,6 +12,7 @@ import io.realm.annotations.PrimaryKey;
 public class Category extends RealmObject implements Parcelable {
     @PrimaryKey
     private int id;
+    private String name;
     private String title;
     private String drawable;
     private String color;
@@ -19,8 +20,9 @@ public class Category extends RealmObject implements Parcelable {
     public Category() {
     }
 
-    public Category(int id, String title, String drawable, String color) {
+    public Category(int id, String name, String title, String drawable, String color) {
         this.id = id;
+        this.name = name;
         this.title = title;
         this.drawable = drawable;
         this.color = color;
@@ -32,6 +34,14 @@ public class Category extends RealmObject implements Parcelable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getTitle() {
@@ -66,6 +76,7 @@ public class Category extends RealmObject implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
+        dest.writeString(this.name);
         dest.writeString(this.title);
         dest.writeString(this.drawable);
         dest.writeString(this.color);
@@ -73,6 +84,7 @@ public class Category extends RealmObject implements Parcelable {
 
     protected Category(Parcel in) {
         this.id = in.readInt();
+        this.name = in.readString();
         this.title = in.readString();
         this.drawable = in.readString();
         this.color = in.readString();

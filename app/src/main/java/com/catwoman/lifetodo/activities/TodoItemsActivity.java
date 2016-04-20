@@ -190,6 +190,7 @@ public class TodoItemsActivity extends AppCompatActivity {
                     id = 1;
                 }
                 item.setId(id);
+                item.setCategory(category);
                 item.setItemName(itemName);
                 item.setItemStatus("InProgress");
                 item.setItemThumbUrl("Default");
@@ -197,9 +198,6 @@ public class TodoItemsActivity extends AppCompatActivity {
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(item);
                 realm.commitTransaction();
-
-                itemsData.add(item);
-                adapterItem.notifyItemInserted(itemsData.size() - 1);
             }
         });
 

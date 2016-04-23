@@ -13,12 +13,11 @@ import android.view.View;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.TodoItemsAdapter;
 import com.catwoman.lifetodo.fragments.AddTextFragment;
-import com.catwoman.lifetodo.interfaces.AddItemListener;
-import com.catwoman.lifetodo.interfaces.DeleteItemListener;
-import com.catwoman.lifetodo.interfaces.EditItemListener;
 import com.catwoman.lifetodo.interfaces.EndlessScrollListener;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.TodoItem;
+import com.catwoman.lifetodo.services.CategoryService;
+import com.catwoman.lifetodo.services.TodoItemService;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -27,32 +26,36 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 public class TodoItemsActivity extends AppCompatActivity {
     private static final String TAG = "TodoItemsActivity";
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.rvItems)
+    RecyclerView rvItems;
+    @Bind(R.id.vOverlay)
+    View vOverlay;
+    @Bind(R.id.famAdd)
+    FloatingActionsMenu famAdd;
+    @Bind(R.id.fabAddText)
+    FloatingActionButton fabAddText;
+    @Bind(R.id.fabAddPhoto)
+    FloatingActionButton fabAddPhoto;
+    @Bind(R.id.fabAddCamera)
+    FloatingActionButton fabAddCamera;
+    @Bind(R.id.fabAddLocation)
+    FloatingActionButton fabAddLocation;
     private RealmResults<TodoItem> itemsData;
     private TodoItemsAdapter adapterItem;
     private AddTextFragment editNameDialogFragment;
-    private Realm realm;
     private Category category;
-
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.rvItems) RecyclerView rvItems;
-    @Bind(R.id.vOverlay) View vOverlay;
-    @Bind(R.id.famAdd) FloatingActionsMenu famAdd;
-    @Bind(R.id.fabAddText) FloatingActionButton fabAddText;
-    @Bind(R.id.fabAddPhoto) FloatingActionButton fabAddPhoto;
-    @Bind(R.id.fabAddCamera) FloatingActionButton fabAddCamera;
-    @Bind(R.id.fabAddLocation) FloatingActionButton fabAddLocation;
+    private CategoryService categoryService;
+    private TodoItemService todoItemService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +66,11 @@ public class TodoItemsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        realm = Realm.getDefaultInstance();
+        categoryService = CategoryService.getInstance();
+        todoItemService = TodoItemService.getInstance();
 
         int categoryId = getIntent().getIntExtra("categoryId", 0);
-        category = realm.where(Category.class).equalTo("id", categoryId).findFirst();
+        category = categoryService.getCategory(categoryId);
         getSupportActionBar().setTitle(category.getTitle());
 
         if (category.getName().equals("place")) {
@@ -84,10 +88,7 @@ public class TodoItemsActivity extends AppCompatActivity {
 
     private void itemListViewPopulate(String itemType) {
 
-        itemsData = realm
-                .where(TodoItem.class)
-                .equalTo("category.id", category.getId())
-                .findAllSorted("id", Sort.ASCENDING);
+        itemsData = todoItemService.getItems(category);
 
         adapterItem = new TodoItemsAdapter(itemsData, itemType);
 
@@ -114,31 +115,6 @@ public class TodoItemsActivity extends AppCompatActivity {
             @Override
             public boolean onLoadMore(int position) {
                 return true;
-            }
-        });
-
-        adapterItem.setDeleteItemListener(new DeleteItemListener() {
-            @Override
-            public void deleteItem(int position, String itemName) {
-                TodoItem itemDelete = realm.where(TodoItem.class).equalTo("itemName", itemName).findFirst();
-
-                realm.beginTransaction();
-                itemDelete.removeFromRealm();
-                realm.commitTransaction();
-            }
-        });
-
-        adapterItem.setEditItemListener(new EditItemListener() {
-            @Override
-            public void EditItem(int position,String itemName, String itemStatus) {
-                //TodoItem itemEdit = new TodoItem();
-                TodoItem itemCurr = realm.where(TodoItem.class).equalTo("itemName", itemName).findFirst();
-
-                realm.beginTransaction();
-                //itemCurr.setId(itemCurr.getId());
-                itemCurr.setItemStatus(itemStatus);
-                realm.copyToRealmOrUpdate(itemCurr);
-                realm.commitTransaction();
             }
         });
     }
@@ -175,32 +151,6 @@ public class TodoItemsActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         editNameDialogFragment = AddTextFragment.newInstance("");
         editNameDialogFragment.show(fm, "fragment_edit_name");
-
-        editNameDialogFragment.setAddItemListener(new AddItemListener() {
-
-            @Override
-            public void AddItem(String itemName) {
-                //Log.d("Debug", "AddItem: " + itemName);
-                TodoItem item = new TodoItem();
-                int id;
-
-                try {
-                    id = realm.where(TodoItem.class).max("id").intValue() + 1;
-                } catch (Exception e) {
-                    id = 1;
-                }
-                item.setId(id);
-                item.setCategory(category);
-                item.setItemName(itemName);
-                item.setItemStatus("InProgress");
-                item.setItemThumbUrl("Default");
-
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(item);
-                realm.commitTransaction();
-            }
-        });
-
     }
 
     public void showAddLocation(View v) {
@@ -237,24 +187,17 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     private void addPlace(Place place) {
-        int id;
-        try {
-            id = realm.where(TodoItem.class).max("id").intValue() + 1;
-        } catch (Exception e) {
-            id = 1;
-        }
-
-        realm.beginTransaction();
-        TodoItem todoItem = realm.createObject(TodoItem.class);
-        todoItem.setId(id);
-        todoItem.setCategory(category);
-        todoItem.setItemName(String.valueOf(place.getName()));
-        todoItem.setItemDescription(String.valueOf(place.getAddress()));
-        todoItem.setLocation(String.valueOf(place.getName()));
-        todoItem.setAddress(String.valueOf(place.getAddress()));
-        todoItem.setLatitude(place.getLatLng().latitude);
-        todoItem.setLongitude(place.getLatLng().longitude);
-        todoItem.setItemStatus("InProgress");
-        realm.commitTransaction();
+        todoItemService.addOrUpdateItem(
+                0,
+                String.valueOf(place.getName()),
+                "",
+                "InProgress",
+                String.valueOf(place.getAddress()),
+                String.valueOf(place.getName()),
+                String.valueOf(place.getAddress()),
+                place.getLatLng().latitude,
+                place.getLatLng().longitude,
+                category
+        );
     }
 }

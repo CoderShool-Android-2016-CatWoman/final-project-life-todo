@@ -19,8 +19,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class HomeActivity extends AppCompatActivity {
-    private HomePagerAdapter pagerAdapter;
-
     @Bind(R.id.appbar)
     AppBarLayout appbar;
     @Bind(R.id.toolbar)
@@ -31,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
     TabLayout tabLayout;
     @Bind(R.id.fab)
     FloatingActionButton fab;
+    private HomePagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

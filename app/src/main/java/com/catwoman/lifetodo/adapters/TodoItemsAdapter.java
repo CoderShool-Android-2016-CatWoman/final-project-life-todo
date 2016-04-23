@@ -15,10 +15,8 @@ import com.catwoman.lifetodo.interfaces.DeleteItemListener;
 import com.catwoman.lifetodo.interfaces.EditItemListener;
 import com.catwoman.lifetodo.interfaces.EndlessScrollListener;
 import com.catwoman.lifetodo.models.TodoItem;
+import com.catwoman.lifetodo.services.TodoItemService;
 
-import java.util.ArrayList;
-
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
@@ -26,13 +24,20 @@ import io.realm.RealmResults;
  */
 public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.ViewHolder> {
 
-    // Store a member variable for the articles
+    private TodoItemService todoItemService;
     private RealmResults<TodoItem> mItemsData;
     private String mitemStyle;
 
     private EndlessScrollListener endlessScrollListener;
     private DeleteItemListener deleteItemListener;
     private EditItemListener editItemListener;
+
+    // Pass in the contact array into the constructor
+    public TodoItemsAdapter(RealmResults<TodoItem> itemsData, String itemStyle) {
+        todoItemService = TodoItemService.getInstance();
+        mItemsData = itemsData;
+        mitemStyle = itemStyle;
+    }
 
     public void setEditItemListener(EditItemListener editItemListener) {
         this.editItemListener = editItemListener;
@@ -42,40 +47,9 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         this.endlessScrollListener = endlessScrollListener;
     }
 
-    public void setDeleteItemListener(DeleteItemListener deleteItemListener){
+    public void setDeleteItemListener(DeleteItemListener deleteItemListener) {
         this.deleteItemListener = deleteItemListener;
     }
-
-    // Pass in the contact array into the constructor
-    public TodoItemsAdapter(RealmResults<TodoItem> itemsData, String itemStyle) {
-        mItemsData = itemsData;
-        mitemStyle = itemStyle;
-    }
-
-    // Provide a direct reference to each of the views within a data item
-    // Used to cache the views within the item layout for fast access
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // Your holder should contain a member variable
-        // for any view that will be set as you render a row
-
-        public TextView tvName;
-        public TextView tvStatus;
-        public ImageView ivThumbUrl;
-        public CardView cvItem;
-
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each subview
-        public ViewHolder(View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
-            super(itemView);
-            tvName = (TextView) itemView.findViewById(R.id.tvItemName);
-            ivThumbUrl = (ImageView) itemView.findViewById(R.id.ivItemThumb);
-            cvItem = (CardView) itemView.findViewById(R.id.cardView);
-
-        }
-    }
-
 
     // Usually involves inflating a layout from XML and returning the holder
     @Override
@@ -100,35 +74,31 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         viewHolder.tvName.setText(item.getItemName());
         viewHolder.ivThumbUrl.setImageResource(R.drawable.iconbook);
 
-        if(item.getItemStatus().equals("Done")){
+        if (item.getItemStatus().equals("Done")) {
             viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
-        }
-        else{
+        } else {
             viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
         }
 
-        viewHolder.ivThumbUrl.setOnClickListener(new View.OnClickListener(){
+        viewHolder.ivThumbUrl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String itemStatus;
-                if(item.getItemStatus().equals("Done")){
+                if (item.getItemStatus().equals("Done")) {
                     itemStatus = "InProgress";
                     viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
-
-                }
-                else {
+                } else {
                     itemStatus = "Done";
                     viewHolder.cvItem.setCardBackgroundColor(Color.parseColor("#A8F28F"));
                 }
-                editItemListener.EditItem(position,item.getItemName(),itemStatus);
+                todoItemService.updateItem(item.getId(), itemStatus);
             }
         });
 
         viewHolder.ivThumbUrl.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                deleteItemListener.deleteItem(position, item.getItemName());
+                todoItemService.removeItem(item.getId());
                 return false;
             }
         });
@@ -138,10 +108,34 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
     @Override
     public int getItemCount() {
         //return mArticles.size();
-        if (mItemsData == null){
+        if (mItemsData == null) {
             return 0;
         }
         return mItemsData.size();
+    }
+
+    // Provide a direct reference to each of the views within a data item
+    // Used to cache the views within the item layout for fast access
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        // Your holder should contain a member variable
+        // for any view that will be set as you render a row
+
+        public TextView tvName;
+        public TextView tvStatus;
+        public ImageView ivThumbUrl;
+        public CardView cvItem;
+
+        // We also create a constructor that accepts the entire item row
+        // and does the view lookups to find each subview
+        public ViewHolder(View itemView) {
+            // Stores the itemView in a public final member variable that can be used
+            // to access the context from any ViewHolder instance.
+            super(itemView);
+            tvName = (TextView) itemView.findViewById(R.id.tvItemName);
+            ivThumbUrl = (ImageView) itemView.findViewById(R.id.ivItemThumb);
+            cvItem = (CardView) itemView.findViewById(R.id.cardView);
+
+        }
     }
 
 

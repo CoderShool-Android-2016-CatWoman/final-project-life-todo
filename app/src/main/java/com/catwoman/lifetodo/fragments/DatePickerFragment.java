@@ -19,10 +19,11 @@ public class DatePickerFragment extends DialogFragment
         // Required empty public constructor
     }
 
-    public static DatePickerFragment newInstance(long timeInMillis) {
+    public static DatePickerFragment newInstance(long timeInMillis, int requestCode) {
         DatePickerFragment fragment = new DatePickerFragment();
         Bundle args = new Bundle();
         args.putLong("timeInMillis", timeInMillis);
+        args.putInt("requestCode", requestCode);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,11 +49,12 @@ public class DatePickerFragment extends DialogFragment
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
+        int requestCode = this.getArguments().getInt("requestCode", 0);
         DatePickerFragmentListener listener = (DatePickerFragmentListener) getActivity();
-        listener.onDatePickerDateSet(year, month, day);
+        listener.onDatePickerDateSet(year, month, day, requestCode);
     }
 
     public interface DatePickerFragmentListener {
-        void onDatePickerDateSet(int year, int month, int day);
+        void onDatePickerDateSet(int year, int month, int day, int requestCode);
     }
 }

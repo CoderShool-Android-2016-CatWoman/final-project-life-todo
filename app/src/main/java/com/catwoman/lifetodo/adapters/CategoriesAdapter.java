@@ -24,29 +24,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
     private RealmResults<Category> categories;
     private Context context;
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @Bind(R.id.rlCategory)
-        RelativeLayout rlCategory;
-        @Bind(R.id.ivThumb)
-        ImageView ivThumb;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int position = getLayoutPosition();
-            Category category = categories.get(position);
-            Intent intent = new Intent(context, TodoItemsActivity.class);
-            intent.putExtra("categoryId", category.getId());
-            context.startActivity(intent);
-        }
-    }
-
     public CategoriesAdapter(RealmResults<Category> categories) {
         this.categories = categories;
     }
@@ -72,5 +49,28 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
             return 0;
         }
         return categories.size();
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @Bind(R.id.rlCategory)
+        RelativeLayout rlCategory;
+        @Bind(R.id.ivThumb)
+        ImageView ivThumb;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getLayoutPosition();
+            Category category = categories.get(position);
+            Intent intent = new Intent(context, TodoItemsActivity.class);
+            intent.putExtra("categoryId", category.getId());
+            context.startActivity(intent);
+        }
     }
 }

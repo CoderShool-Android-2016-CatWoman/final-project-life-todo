@@ -13,7 +13,6 @@ import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.activities.PlanActivity;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
-import com.catwoman.lifetodo.models.TodoItem;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -22,7 +21,6 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
@@ -31,6 +29,59 @@ import io.realm.RealmResults;
 public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> {
     private RealmResults<Plan> plans;
     private Context context;
+
+    public PlansAdapter(RealmResults<Plan> plans) {
+        this.plans = plans;
+    }
+
+    @Override
+    public PlansAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.item_plan, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(PlansAdapter.ViewHolder holder, int position) {
+        Plan plan = plans.get(position);
+        Category category = plan.getCategory();
+
+        holder.ivThumb.setImageResource(context.getResources().getIdentifier("ic_" + category.getDrawable() + "_color_out",
+                "drawable", context.getPackageName()));
+        holder.tvTitle.setText(plan.getTitle());
+        holder.tvGoal.setText(String.valueOf(plan.getGoal()));
+
+        if (plan.getProgress() >= plan.getGoal()) {
+            holder.tvRemainingTime.setText(context.getString(R.string.message_completed));
+        } else {
+            holder.tvRemainingTime.setText(getStringRemaining(plan.getEndTime()));
+        }
+        holder.pbProgress.setMax(plan.getGoal());
+        holder.pbProgress.getProgressDrawable().setColorFilter(context.getResources().getColor(
+                context.getResources().getIdentifier("color" + plan.getCategory().getColor(), "color",
+                        context.getPackageName())), android.graphics.PorterDuff.Mode.SRC_IN);
+        holder.pbProgress.setProgress(plan.getProgress());
+    }
+
+    @Override
+    public int getItemCount() {
+        if (null == plans) {
+            return 0;
+        }
+        return plans.size();
+    }
+
+    private String getStringRemaining(long time) {
+        String remaining = "";
+        PrettyTime pt = new PrettyTime();
+        if (System.currentTimeMillis() <= time) {
+            String duration = pt.formatDuration(new Date(time));
+            remaining = context.getString(R.string._1_s_remaining, duration);
+        } else {
+            remaining = pt.format(new Date(time));
+        }
+        return remaining;
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @Bind(R.id.ivThumb)
@@ -59,65 +110,5 @@ public class PlansAdapter extends RecyclerView.Adapter<PlansAdapter.ViewHolder> 
             intent.putExtra("id", plan.getId());
             context.startActivity(intent);
         }
-    }
-
-    public PlansAdapter(RealmResults<Plan> plans) {
-        this.plans = plans;
-    }
-
-    @Override
-    public PlansAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.item_plan, parent, false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(PlansAdapter.ViewHolder holder, int position) {
-        Plan plan = plans.get(position);
-        Category category = plan.getCategory();
-
-        holder.ivThumb.setImageResource(context.getResources().getIdentifier("ic_" + category.getDrawable() + "_color_out",
-                "drawable", context.getPackageName()));
-        holder.tvTitle.setText(plan.getTitle());
-        holder.tvGoal.setText(String.valueOf(plan.getGoal()));
-
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<TodoItem> doneItems = realm
-                .where(TodoItem.class)
-                .equalTo("category.id", plan.getCategory().getId())
-                .equalTo("itemStatus", "Done")
-                .findAll();
-        int progress = doneItems.size();
-        if (progress >= plan.getGoal()) {
-            holder.tvRemainingTime.setText(context.getString(R.string.message_completed));
-        } else {
-            holder.tvRemainingTime.setText(getStringRemaining(plan.getDueTime()));
-        }
-        holder.pbProgress.setMax(plan.getGoal());
-        holder.pbProgress.getProgressDrawable().setColorFilter(context.getResources().getColor(
-                context.getResources().getIdentifier("color" + plan.getCategory().getColor(), "color",
-                        context.getPackageName())), android.graphics.PorterDuff.Mode.SRC_IN);
-        holder.pbProgress.setProgress(progress);
-    }
-
-    @Override
-    public int getItemCount() {
-        if (null == plans) {
-            return 0;
-        }
-        return plans.size();
-    }
-
-    private String getStringRemaining(long time) {
-        String remaining = "";
-        PrettyTime pt = new PrettyTime();
-        if (System.currentTimeMillis() <= time) {
-            String duration = pt.formatDuration(new Date(time));
-            remaining = context.getString(R.string._1_s_remaining, duration);
-        } else {
-            remaining = pt.format(new Date(time));
-        }
-        return remaining;
     }
 }

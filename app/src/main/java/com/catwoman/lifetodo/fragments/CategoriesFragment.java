@@ -12,25 +12,23 @@ import android.view.ViewGroup;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.CategoriesAdapter;
 import com.catwoman.lifetodo.models.Category;
+import com.catwoman.lifetodo.services.CategoryService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 /**
  * Created by annt on 4/9/16.
  */
 public class CategoriesFragment extends Fragment {
+    private static int SPAN_COUNT = 2;
+    @Bind(R.id.rvCategories)
+    RecyclerView rvCategories;
     private RealmResults<Category> categories;
     private CategoriesAdapter adapter;
     private GridLayoutManager layoutManager;
-    private static int SPAN_COUNT = 2;
-    private Realm realm;
-
-    @Bind(R.id.rvCategories)
-    RecyclerView rvCategories;
+    private CategoryService categoryService;
 
     @Nullable
     @Override
@@ -38,8 +36,8 @@ public class CategoriesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_categories, container, false);
         ButterKnife.bind(this, view);
 
-        realm = Realm.getDefaultInstance();
-        categories = realm.where(Category.class).findAllSorted("id", Sort.ASCENDING);
+        categoryService = CategoryService.getInstance();
+        categories = categoryService.getCategories();
         adapter = new CategoriesAdapter(categories);
         layoutManager = new GridLayoutManager(getContext(), SPAN_COUNT);
 

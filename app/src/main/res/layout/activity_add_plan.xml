@@ -60,7 +60,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/tilDueDate"
+        android:id="@+id/tilStartDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tilGoal"
@@ -68,9 +68,28 @@
         android:layout_alignParentStart="true">
 
         <EditText
-            android:hint="@string/hint_plan_due_date"
-            android:id="@+id/etDueDate"
-            android:onClick="onEtDueDateClick"
+            android:hint="@string/hint_plan_start_date"
+            android:id="@+id/etStartDate"
+            android:onClick="onEtStartDateClick"
+            android:focusable="false"
+            android:textSize="16sp"
+            android:inputType="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tilEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tilStartDate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <EditText
+            android:hint="@string/hint_plan_end_date"
+            android:id="@+id/etEndDate"
+            android:onClick="onEtEndDateClick"
             android:focusable="false"
             android:textSize="16sp"
             android:inputType="date"

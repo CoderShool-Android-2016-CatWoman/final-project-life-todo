@@ -77,31 +77,30 @@
             </FrameLayout>
 
             <RelativeLayout
-                android:id="@+id/rlDueDate"
+                android:id="@+id/rlDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/activity_vertical_margin"
-                android:layout_below="@+id/flProgress"
-                android:gravity="center_horizontal">
+                android:layout_below="@+id/flProgress">
 
                 <TextView
-                    android:id="@+id/tvDueDateLabel"
+                    android:id="@+id/tvStartToEndDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_plan_due_date"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/tvDueDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_toEndOf="@+id/tvDueDateLabel"
-                    android:layout_toRightOf="@+id/tvDueDateLabel"
+                    android:layout_centerHorizontal="true"
                     android:text="Medium Text"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/colorTextDark" />
+
+                <TextView
+                    android:id="@+id/tvRemainingTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvStartToEndDate"
+                    android:layout_centerHorizontal="true"
+                    android:text="New Text"
+                    android:textStyle="italic"
+                    android:textSize="15sp"/>
             </RelativeLayout>
         </RelativeLayout>
     </ScrollView>

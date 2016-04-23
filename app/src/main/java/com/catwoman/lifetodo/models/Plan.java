@@ -15,17 +15,21 @@ public class Plan extends RealmObject implements Parcelable {
     private String title;
     private Category category;
     private int goal;
-    private long dueTime;
+    private int progress;
+    private long startTime;
+    private long endTime;
 
     public Plan() {
     }
 
-    public Plan(int id, String title, Category category, int goal, long dueTime) {
+    public Plan(int id, String title, Category category, int goal, int progress, long startTime, long endTime) {
         this.id = id;
         this.title = title;
         this.category = category;
         this.goal = goal;
-        this.dueTime = dueTime;
+        this.progress = progress;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     public int getId() {
@@ -60,12 +64,28 @@ public class Plan extends RealmObject implements Parcelable {
         this.goal = goal;
     }
 
-    public long getDueTime() {
-        return dueTime;
+    public int getProgress() {
+        return progress;
     }
 
-    public void setDueTime(long dueTime) {
-        this.dueTime = dueTime;
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
     }
 
     @Override
@@ -79,7 +99,9 @@ public class Plan extends RealmObject implements Parcelable {
         dest.writeString(this.title);
         dest.writeParcelable(this.category, flags);
         dest.writeInt(this.goal);
-        dest.writeLong(this.dueTime);
+        dest.writeInt(this.progress);
+        dest.writeLong(this.startTime);
+        dest.writeLong(this.endTime);
     }
 
     protected Plan(Parcel in) {
@@ -87,7 +109,9 @@ public class Plan extends RealmObject implements Parcelable {
         this.title = in.readString();
         this.category = in.readParcelable(Category.class.getClassLoader());
         this.goal = in.readInt();
-        this.dueTime = in.readLong();
+        this.progress = in.readInt();
+        this.startTime = in.readLong();
+        this.endTime = in.readLong();
     }
 
     public static final Creator<Plan> CREATOR = new Creator<Plan>() {

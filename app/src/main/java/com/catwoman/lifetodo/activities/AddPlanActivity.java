@@ -16,6 +16,8 @@ import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.fragments.DatePickerFragment;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
+import com.catwoman.lifetodo.services.CategoryService;
+import com.catwoman.lifetodo.services.PlanService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,26 +25,30 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 public class AddPlanActivity extends AppCompatActivity
         implements DatePickerFragment.DatePickerFragmentListener {
-    private long dueTimeInMillis = 0;
-    private Realm realm;
-    private RealmResults<Category> categories;
-    private boolean isEdit = false;
-    private Plan plan;
-
+    private static final int REQUEST_START_DATE = 1;
+    private static final int REQUEST_END_DATE = 2;
+    private static final String DATE_FORMAT = "MM-dd-yyyy";
     @Bind(R.id.spCategory)
     Spinner spCategory;
     @Bind(R.id.etName)
     EditText etName;
     @Bind(R.id.etGoal)
     EditText etGoal;
-    @Bind(R.id.etDueDate)
-    EditText etDueDate;
+    @Bind(R.id.etStartDate)
+    EditText etStartDate;
+    @Bind(R.id.etEndDate)
+    EditText etEndDate;
+    private long startTimeInMillis = 0;
+    private long endTimeInMillis = 0;
+    private RealmResults<Category> categories;
+    private boolean isEdit = false;
+    private Plan plan;
+    private CategoryService categoryService;
+    private PlanService planService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +57,14 @@ public class AddPlanActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
-        realm = Realm.getDefaultInstance();
-        categories = realm.where(Category.class).findAllSorted("id", Sort.ASCENDING);
+        categoryService = CategoryService.getInstance();
+        planService = PlanService.getInstance();
+
+        categories = categoryService.getCategories();
 
         int id = getIntent().getIntExtra("id", 0);
         if (0 != id) {
-            plan = realm.where(Plan.class).equalTo("id", id).findFirst();
+            plan = planService.getPlan(id);
             if (null == plan) {
                 Toast.makeText(this, R.string.error_plan_not_found, Toast.LENGTH_LONG).show();
                 finish();
@@ -83,6 +91,9 @@ public class AddPlanActivity extends AppCompatActivity
 
         if (isEdit) {
             populateValues();
+        } else {
+            startTimeInMillis = System.currentTimeMillis();
+            etStartDate.setText(getDateString(startTimeInMillis, DATE_FORMAT));
         }
     }
 
@@ -95,17 +106,20 @@ public class AddPlanActivity extends AppCompatActivity
 
         etName.setText(plan.getTitle());
         etGoal.setText(String.valueOf(plan.getGoal()));
-        dueTimeInMillis = plan.getDueTime();
-        etDueDate.setText(getDateString(dueTimeInMillis, "MM-dd-yyyy"));
+        startTimeInMillis = plan.getStartTime();
+        etStartDate.setText(getDateString(startTimeInMillis, DATE_FORMAT));
+        endTimeInMillis = plan.getEndTime();
+        etEndDate.setText(getDateString(endTimeInMillis, DATE_FORMAT));
     }
 
-    public void onEtDueDateClick(View v) {
-        showDatePicker();
+    public void onEtStartDateClick(View v) {
+        DatePickerFragment fragment = DatePickerFragment.newInstance(startTimeInMillis, REQUEST_START_DATE);
+        fragment.show(getSupportFragmentManager(), "startDatePicker");
     }
 
-    public void showDatePicker() {
-        DatePickerFragment fragment = DatePickerFragment.newInstance(dueTimeInMillis);
-        fragment.show(getSupportFragmentManager(), "datePicker");
+    public void onEtEndDateClick(View v) {
+        DatePickerFragment fragment = DatePickerFragment.newInstance(endTimeInMillis, REQUEST_END_DATE);
+        fragment.show(getSupportFragmentManager(), "endDatePicker");
     }
 
     @Override
@@ -131,26 +145,12 @@ public class AddPlanActivity extends AppCompatActivity
             return;
         }
 
-        realm.beginTransaction();
-
-        if (!isEdit) {
-            int id;
-            try {
-                id = realm.where(Plan.class).max("id").intValue() + 1;
-            } catch (Exception e) {
-                id = 1;
-            }
-            plan = realm.createObject(Plan.class);
-            plan.setId(id);
-        }
-
+        int id = isEdit ? plan.getId() : 0;
+        String title = etName.getText().toString();
         Category category = categories.get(spCategory.getSelectedItemPosition());
-        plan.setCategory(category);
-        plan.setTitle(etName.getText().toString());
-        plan.setGoal(Integer.valueOf(etGoal.getText().toString()));
-        plan.setDueTime(dueTimeInMillis);
+        int goal = Integer.valueOf(etGoal.getText().toString());
 
-        realm.commitTransaction();
+        planService.addOrUpdatePlan(id, title, category, goal, startTimeInMillis, endTimeInMillis);
 
         String message = getString(isEdit ? R.string.message_plan_updated : R.string.message_plan_added);
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -170,8 +170,13 @@ public class AddPlanActivity extends AppCompatActivity
             isValid = false;
         }
 
-        if (TextUtils.isEmpty(etDueDate.getText())) {
-            etDueDate.setError(getString(R.string.error_missing_plan_due_date));
+        if (TextUtils.isEmpty(etStartDate.getText())) {
+            etStartDate.setError(getString(R.string.error_missing_plan_start_date));
+            isValid = false;
+        }
+
+        if (TextUtils.isEmpty(etEndDate.getText())) {
+            etEndDate.setError(getString(R.string.error_missing_plan_end_date));
             isValid = false;
         }
 
@@ -179,13 +184,25 @@ public class AddPlanActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDatePickerDateSet(int year, int month, int day) {
-        setDueDate(year, month, day);
+    public void onDatePickerDateSet(int year, int month, int day, int requestCode) {
+        switch (requestCode) {
+            case REQUEST_START_DATE:
+                setStartDate(year, month, day);
+                break;
+            case REQUEST_END_DATE:
+                setEndDate(year, month, day);
+                break;
+        }
     }
 
-    private void setDueDate(int year, int monthOfYear, int dayOfMonth) {
-        dueTimeInMillis = ymdToTimeInMillis(year, monthOfYear, dayOfMonth);
-        etDueDate.setText(getDateString(dueTimeInMillis, "MM-dd-yyyy"));
+    private void setEndDate(int year, int month, int day) {
+        endTimeInMillis = ymdToTimeInMillis(year, month, day);
+        etEndDate.setText(getDateString(endTimeInMillis, DATE_FORMAT));
+    }
+
+    private void setStartDate(int year, int month, int day) {
+        startTimeInMillis = ymdToTimeInMillis(year, month, day);
+        etStartDate.setText(getDateString(startTimeInMillis, DATE_FORMAT));
     }
 
     private long ymdToTimeInMillis(int year, int monthOfYear, int dayOfMonth) {

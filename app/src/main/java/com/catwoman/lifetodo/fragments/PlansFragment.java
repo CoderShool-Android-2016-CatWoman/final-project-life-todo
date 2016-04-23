@@ -13,27 +13,25 @@ import android.widget.TextView;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.PlansAdapter;
 import com.catwoman.lifetodo.models.Plan;
+import com.catwoman.lifetodo.services.PlanService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 /**
  * Created by annt on 4/9/16.
  */
 public class PlansFragment extends Fragment {
-    private RealmResults<Plan> plans;
-    private PlansAdapter adapter;
-    private LinearLayoutManager layoutManager;
-    private Realm realm;
-
     @Bind(R.id.tvMessage)
     TextView tvMessage;
     @Bind(R.id.rvPlans)
     RecyclerView rvPlans;
+    private RealmResults<Plan> plans;
+    private PlansAdapter adapter;
+    private LinearLayoutManager layoutManager;
+    private PlanService planService;
 
     @Nullable
     @Override
@@ -41,8 +39,8 @@ public class PlansFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_plans, container, false);
         ButterKnife.bind(this, view);
 
-        realm = Realm.getDefaultInstance();
-        plans = realm.where(Plan.class).findAllSorted("id", Sort.ASCENDING);
+        planService = PlanService.getInstance();
+        plans = planService.getPlans();
         adapter = new PlansAdapter(plans);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 

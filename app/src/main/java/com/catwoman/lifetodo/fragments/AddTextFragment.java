@@ -15,14 +15,10 @@ import com.catwoman.lifetodo.interfaces.AddItemListener;
 /**
  * Created by annt on 4/9/16.
  */
-public class AddTextFragment extends android.support.v4.app.DialogFragment{
+public class AddTextFragment extends android.support.v4.app.DialogFragment {
     private EditText mEditText;
     private Button mBtnSave;
     private AddItemListener addItemListener;
-
-    public void setAddItemListener(AddItemListener addItemListener) {
-        this.addItemListener = addItemListener;
-    }
 
     public AddTextFragment() {
         // Empty constructor is required for DialogFragment
@@ -38,6 +34,10 @@ public class AddTextFragment extends android.support.v4.app.DialogFragment{
         return frag;
     }
 
+    public void setAddItemListener(AddItemListener addItemListener) {
+        this.addItemListener = addItemListener;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class AddTextFragment extends android.support.v4.app.DialogFragment{
         super.onViewCreated(view, savedInstanceState);
         // Get field from view
         mEditText = (EditText) view.findViewById(R.id.etItemName);
-        mBtnSave = (Button)view.findViewById(R.id.btnSaveItem);
+        mBtnSave = (Button) view.findViewById(R.id.btnSaveItem);
 
         // Fetch arguments from bundle and set title
         String title = getArguments().getString("title", "Enter Item Name");

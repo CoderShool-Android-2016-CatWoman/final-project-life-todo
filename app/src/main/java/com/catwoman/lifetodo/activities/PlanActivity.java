@@ -15,9 +15,11 @@ import android.widget.Toast;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.models.Plan;
-import com.catwoman.lifetodo.models.TodoItem;
+import com.catwoman.lifetodo.services.PlanService;
 import com.txusballesteros.widgets.FitChart;
 import com.txusballesteros.widgets.FitChartValue;
+
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,15 +28,9 @@ import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
 
 public class PlanActivity extends AppCompatActivity {
-    private Realm realm;
-    private Plan plan;
-    private RealmResults<TodoItem> doneItems;
-
     @Bind(R.id.tvName)
     TextView tvName;
     @Bind(R.id.fcProgress)
@@ -45,8 +41,12 @@ public class PlanActivity extends AppCompatActivity {
     TextView tvRemainingItems;
     @Bind(R.id.tvGoal)
     TextView tvGoal;
-    @Bind(R.id.tvDueDate)
-    TextView tvDueDate;
+    @Bind(R.id.tvStartToEndDate)
+    TextView tvStartToEndDate;
+    @Bind(R.id.tvRemainingTime)
+    TextView tvRemainingTime;
+    private Plan plan;
+    private PlanService planService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +55,14 @@ public class PlanActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
-        realm = Realm.getDefaultInstance();
+        planService = PlanService.getInstance();
 
         int id = getIntent().getIntExtra("id", 0);
-        plan = realm.where(Plan.class).equalTo("id", id).findFirst();
+        plan = planService.getPlan(id);
         if (null == plan) {
             Toast.makeText(this, R.string.error_plan_not_found, Toast.LENGTH_LONG).show();
             finish();
         }
-
-        doneItems = realm
-                .where(TodoItem.class)
-                .equalTo("category.id", plan.getCategory().getId())
-                .equalTo("itemStatus", "Done")
-                .findAll();
 
         setListeners();
         populateViews();
@@ -76,13 +70,6 @@ public class PlanActivity extends AppCompatActivity {
 
     private void setListeners() {
         plan.addChangeListener(new RealmChangeListener() {
-            @Override
-            public void onChange() {
-                populateViews();
-            }
-        });
-
-        doneItems.addChangeListener(new RealmChangeListener() {
             @Override
             public void onChange() {
                 populateViews();
@@ -135,9 +122,7 @@ public class PlanActivity extends AppCompatActivity {
     }
 
     private void deletePlan() {
-        realm.beginTransaction();
-        plan.removeFromRealm();
-        realm.commitTransaction();
+        planService.removePlan(plan.getId());
 
         Toast.makeText(this, getString(R.string.message_plan_has_been_deleted), Toast.LENGTH_LONG).show();
         finish();
@@ -156,9 +141,7 @@ public class PlanActivity extends AppCompatActivity {
         ivThumb.setImageResource(getResources().getIdentifier("ic_" + plan.getCategory().getDrawable() + "_color_full",
                 "drawable", getPackageName()));
 
-        int progress = doneItems.size();
-
-        int remainingItems = plan.getGoal() - progress;
+        int remainingItems = plan.getGoal() - plan.getProgress();
         if (0 >= remainingItems) {
             tvRemainingItems.setText(getString(R.string.message_completed));
         } else {
@@ -170,11 +153,20 @@ public class PlanActivity extends AppCompatActivity {
         fcProgress.setMinValue(0f);
         fcProgress.setMaxValue(plan.getGoal());
         Collection<FitChartValue> values = new ArrayList<>();
-        values.add(new FitChartValue(progress, getResources().getColor(
+        values.add(new FitChartValue(plan.getProgress(), getResources().getColor(
                 getResources().getIdentifier("color" + plan.getCategory().getColor(), "color", getPackageName()))));
         fcProgress.setValues(values);
 
-        tvDueDate.setText(getDateString(plan.getDueTime(), "MMM d yyyy"));
+        String startDate = getDateString(plan.getStartTime(), "MMM d yyyy");
+        String endDate = getDateString(plan.getEndTime(), "MMM d yyyy");
+        String startToEndDate = startDate + " - " + endDate;
+        tvStartToEndDate.setText(startToEndDate);
+
+        if (plan.getProgress() < plan.getGoal()) {
+            tvRemainingTime.setText(getStringRemaining(plan.getEndTime()));
+        } else {
+            tvRemainingTime.setText("");
+        }
     }
 
     private String getDateString(long timeStamp, String format) {
@@ -185,5 +177,17 @@ public class PlanActivity extends AppCompatActivity {
         }
 
         return "";
+    }
+
+    private String getStringRemaining(long time) {
+        String remaining = "";
+        PrettyTime pt = new PrettyTime();
+        if (System.currentTimeMillis() <= time) {
+            String duration = pt.formatDuration(new Date(time));
+            remaining = getString(R.string._1_s_remaining, duration);
+        } else {
+            remaining = pt.format(new Date(time));
+        }
+        return remaining;
     }
 }

@@ -18,12 +18,14 @@ public class TodoItem extends RealmObject implements Parcelable {
     private double latitude;
     private double longitude;
     private Category category;
+    private long createdTime;
+    private long modifiedTime;
 
-    public TodoItem(){
+    public TodoItem() {
 
     }
 
-    public TodoItem(int id, String itemName, String itemThumbUrl, String itemStatus, String itemDescription, String location, String address, double latitude, double longitude, Category category) {
+    public TodoItem(int id, String itemName, String itemThumbUrl, String itemStatus, String itemDescription, String location, String address, double latitude, double longitude, Category category, long createdTime, long modifiedTime) {
         this.id = id;
         this.itemName = itemName;
         this.itemThumbUrl = itemThumbUrl;
@@ -34,6 +36,8 @@ public class TodoItem extends RealmObject implements Parcelable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.category = category;
+        this.createdTime = createdTime;
+        this.modifiedTime = modifiedTime;
     }
 
     public int getId() {
@@ -116,6 +120,22 @@ public class TodoItem extends RealmObject implements Parcelable {
         this.category = category;
     }
 
+    public long getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(long createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public long getModifiedTime() {
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(long modifiedTime) {
+        this.modifiedTime = modifiedTime;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -133,6 +153,8 @@ public class TodoItem extends RealmObject implements Parcelable {
         dest.writeDouble(this.latitude);
         dest.writeDouble(this.longitude);
         dest.writeParcelable(this.category, flags);
+        dest.writeLong(this.createdTime);
+        dest.writeLong(this.modifiedTime);
     }
 
     protected TodoItem(Parcel in) {
@@ -146,6 +168,8 @@ public class TodoItem extends RealmObject implements Parcelable {
         this.latitude = in.readDouble();
         this.longitude = in.readDouble();
         this.category = in.readParcelable(Category.class.getClassLoader());
+        this.createdTime = in.readLong();
+        this.modifiedTime = in.readLong();
     }
 
     public static final Creator<TodoItem> CREATOR = new Creator<TodoItem>() {

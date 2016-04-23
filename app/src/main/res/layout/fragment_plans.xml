@@ -9,6 +9,7 @@
         android:visibility="gone"
         android:padding="@dimen/activity_vertical_margin"
         android:gravity="center_horizontal"
+        android:textStyle="italic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

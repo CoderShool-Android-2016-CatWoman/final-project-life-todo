@@ -22,4 +22,6 @@
     <color name="colorBorderItemPlan">#E0E0E0</color>
     <color name="colorBackgroundItemPlan">#FFFFFF</color>
     <color name="colorTextDark">#000000</color>
+    <color name="colorBgItemTodo">#FFFFFF</color>
+    <color name="colorBgItemTodoDone">#C8E6C9</color>
 </resources>

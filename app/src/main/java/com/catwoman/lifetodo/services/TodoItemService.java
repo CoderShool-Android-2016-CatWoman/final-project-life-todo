@@ -34,6 +34,7 @@ public class TodoItemService {
         TodoItem todoItem = this.getItem(id);
         realm.beginTransaction();
         todoItem.setItemStatus(itemStatus);
+        todoItem.setModifiedTime(System.currentTimeMillis());
         realm.commitTransaction();
 
         PlanService.getInstance().updatePlansProgress(todoItem);

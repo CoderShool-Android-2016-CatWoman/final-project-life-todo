@@ -9,11 +9,11 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.TodoItemsAdapter;
 import com.catwoman.lifetodo.fragments.AddTextFragment;
-import com.catwoman.lifetodo.interfaces.EndlessScrollListener;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.TodoItem;
 import com.catwoman.lifetodo.services.CategoryService;
@@ -38,6 +38,8 @@ public class TodoItemsActivity extends AppCompatActivity {
     Toolbar toolbar;
     @Bind(R.id.rvItems)
     RecyclerView rvItems;
+    @Bind(R.id.tvMessage)
+    TextView tvMessage;
     @Bind(R.id.vOverlay)
     View vOverlay;
     @Bind(R.id.famAdd)
@@ -50,12 +52,13 @@ public class TodoItemsActivity extends AppCompatActivity {
     FloatingActionButton fabAddCamera;
     @Bind(R.id.fabAddLocation)
     FloatingActionButton fabAddLocation;
-    private RealmResults<TodoItem> itemsData;
-    private TodoItemsAdapter adapterItem;
+    private RealmResults<TodoItem> todoItems;
     private AddTextFragment editNameDialogFragment;
     private Category category;
     private CategoryService categoryService;
     private TodoItemService todoItemService;
+    private TodoItemsAdapter todoItemsAdapter;
+    private StaggeredGridLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,56 +80,28 @@ public class TodoItemsActivity extends AppCompatActivity {
             fabAddLocation.setVisibility(View.VISIBLE);
         }
 
-        //Item list view populate
-        String itemType = "book";
-        itemListViewPopulate(itemType);
-
-        //Process Floating Action Menu
-        floatingActionListener();
-
+        populateViews();
+        setListeners();
     }
 
-    private void itemListViewPopulate(String itemType) {
+    private void populateViews() {
+        todoItems = todoItemService.getItems(category);
+        todoItemsAdapter = new TodoItemsAdapter(todoItems);
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        rvItems.setAdapter(todoItemsAdapter);
+        rvItems.setLayoutManager(layoutManager);
 
-        itemsData = todoItemService.getItems(category);
+        String message = getString(R.string.message_no_item, category.getTitle().toLowerCase());
+        tvMessage.setText(message);
+        toggleMessage();
+    }
 
-        adapterItem = new TodoItemsAdapter(itemsData, itemType);
-
-        // Attach the adapter to the recyclerview to populate items
-        rvItems.setAdapter(adapterItem);
-
-        adapterItem.notifyDataSetChanged();
-
-        itemsData.addChangeListener(new RealmChangeListener() {
+    private void setListeners() {
+        todoItems.addChangeListener(new RealmChangeListener() {
             @Override
             public void onChange() {
-                adapterItem.notifyDataSetChanged();
-            }
-        });
-
-        // First param is number of columns and second param is orientation i.e Vertical or Horizontal
-        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
-        // Attach the layout manager to the recycler view
-        rvItems.setLayoutManager(gridLayoutManager);
-
-        rvItems.setHasFixedSize(true);
-
-        adapterItem.setEndlessScrollListener(new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int position) {
-                return true;
-            }
-        });
-    }
-
-    private void floatingActionListener() {
-        fabAddText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TodoItem newBook = new TodoItem("love", "hi", "Progress", "hi");
-                //itemsData.add(itemsData.size(), newBook);
-                //adapterItem.notifyItemInserted(itemsData.size());
-                showEditDialog();
+                todoItemsAdapter.notifyDataSetChanged();
+                toggleMessage();
             }
         });
 
@@ -141,6 +116,17 @@ public class TodoItemsActivity extends AppCompatActivity {
                 vOverlay.setVisibility(View.GONE);
             }
         });
+
+        fabAddText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditDialog();
+            }
+        });
+    }
+
+    private void toggleMessage() {
+        tvMessage.setVisibility(0 == todoItems.size() ? View.VISIBLE : View.GONE);
     }
 
     public void collapseFAM(View v) {
@@ -148,8 +134,10 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     private void showEditDialog() {
+        famAdd.collapseImmediately();
+
         FragmentManager fm = getSupportFragmentManager();
-        editNameDialogFragment = AddTextFragment.newInstance("");
+        editNameDialogFragment = AddTextFragment.newInstance("", category);
         editNameDialogFragment.show(fm, "fragment_edit_name");
     }
 

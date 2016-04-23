@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Life Todo</string>
+    <string name="google_app_id">728555172352</string>
     <string name="title_activity_home">Life Todo</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
@@ -13,7 +14,7 @@
     <string name="hint_plan_goal">Number of items to complete</string>
     <string name="hint_plan_start_date">Start Date</string>
     <string name="hint_plan_end_date">End Date</string>
-    <string name="meesage_no_plans">No plans found. Create one now!</string>
+    <string name="meesage_no_plans">No plans found. Create one now.</string>
     <string name="message_plan_added">Great! You have a new plan. Let\'s do it.</string>
     <string name="message_plan_updated">Your plan has been updated successfully.</string>
     <string name="error_missing_plan_name">Please input your plan.</string>
@@ -33,4 +34,5 @@
     <string name="confirm_delete_plan_title">Delete This Plan</string>
     <string name="confirm_delete_plan_message">Are you sure you want to delete this plan?</string>
     <string name="add_new_item">Add New %1$s</string>
+    <string name="message_no_item">No %1$s found. Add one now.</string>
 </resources>

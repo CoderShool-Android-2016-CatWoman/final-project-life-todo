@@ -11,6 +11,8 @@ import android.widget.EditText;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.interfaces.AddItemListener;
+import com.catwoman.lifetodo.models.Category;
+import com.catwoman.lifetodo.services.TodoItemService;
 
 /**
  * Created by annt on 4/9/16.
@@ -26,10 +28,11 @@ public class AddTextFragment extends android.support.v4.app.DialogFragment {
         // Use `newInstance` instead as shown below
     }
 
-    public static AddTextFragment newInstance(String title) {
+    public static AddTextFragment newInstance(String title, Category category) {
         AddTextFragment frag = new AddTextFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
+        args.putParcelable("category", category);
         frag.setArguments(args);
         return frag;
     }
@@ -64,8 +67,10 @@ public class AddTextFragment extends android.support.v4.app.DialogFragment {
             @Override
             public void onClick(View v) {
                 String itemName = mEditText.getText().toString();
-                addItemListener.AddItem(itemName);
-
+                TodoItemService.getInstance().addOrUpdateItem(0, String.valueOf(itemName), "",
+                        "InProgress", "", "", "", 0, 0,
+                        (Category) getArguments().getParcelable("category")
+                );
                 dismiss();
             }
         });

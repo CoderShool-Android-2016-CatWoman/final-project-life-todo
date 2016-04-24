@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.PlansAdapter;
 import com.catwoman.lifetodo.models.Plan;
-import com.catwoman.lifetodo.services.PlanService;
+import com.catwoman.lifetodo.dbs.PlanDb;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,7 +31,7 @@ public class PlansFragment extends Fragment {
     private RealmResults<Plan> plans;
     private PlansAdapter adapter;
     private LinearLayoutManager layoutManager;
-    private PlanService planService;
+    private PlanDb planDb;
 
     @Nullable
     @Override
@@ -39,8 +39,8 @@ public class PlansFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_plans, container, false);
         ButterKnife.bind(this, view);
 
-        planService = PlanService.getInstance();
-        plans = planService.getPlans();
+        planDb = PlanDb.getInstance();
+        plans = planDb.getPlans();
         adapter = new PlansAdapter(plans);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 

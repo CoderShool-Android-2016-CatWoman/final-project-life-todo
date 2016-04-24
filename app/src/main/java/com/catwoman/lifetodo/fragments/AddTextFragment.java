@@ -12,7 +12,7 @@ import android.widget.EditText;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.interfaces.AddItemListener;
 import com.catwoman.lifetodo.models.Category;
-import com.catwoman.lifetodo.services.TodoItemService;
+import com.catwoman.lifetodo.dbs.TodoItemDb;
 
 /**
  * Created by annt on 4/9/16.
@@ -67,7 +67,7 @@ public class AddTextFragment extends android.support.v4.app.DialogFragment {
             @Override
             public void onClick(View v) {
                 String itemName = mEditText.getText().toString();
-                TodoItemService.getInstance().addOrUpdateItem(0, String.valueOf(itemName), "",
+                TodoItemDb.getInstance().addOrUpdateItem(0, String.valueOf(itemName), "",
                         "InProgress", "", "", "", 0, 0,
                         (Category) getArguments().getParcelable("category")
                 );

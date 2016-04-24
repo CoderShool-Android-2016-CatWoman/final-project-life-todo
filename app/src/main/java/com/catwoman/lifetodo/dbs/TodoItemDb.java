@@ -1,4 +1,4 @@
-package com.catwoman.lifetodo.services;
+package com.catwoman.lifetodo.dbs;
 
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
@@ -11,23 +11,26 @@ import io.realm.Sort;
 /**
  * Created by annt on 4/23/16.
  */
-public class TodoItemService {
-    // Don't forget to update plan progress after update item
-    private static final TodoItemService INSTANCE = new TodoItemService();
+public class TodoItemDb {
+    // Don't forget to update plan progress after process item
+    private static final TodoItemDb INSTANCE = new TodoItemDb();
     private Realm realm = Realm.getDefaultInstance();
 
-    private TodoItemService() {
+    private TodoItemDb() {
     }
 
-    public static TodoItemService getInstance() {
+    public static TodoItemDb getInstance() {
         return INSTANCE;
     }
 
     public void removeItem(int id) {
         TodoItem todoItem = this.getItem(id);
+        Category category = todoItem.getCategory();
         realm.beginTransaction();
         todoItem.removeFromRealm();
         realm.commitTransaction();
+
+        PlanDb.getInstance().updatePlansProgress(category);
     }
 
     public void updateItem(int id, String itemStatus) {
@@ -37,7 +40,7 @@ public class TodoItemService {
         todoItem.setModifiedTime(System.currentTimeMillis());
         realm.commitTransaction();
 
-        PlanService.getInstance().updatePlansProgress(todoItem);
+        PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
     }
 
     public void addOrUpdateItem(int id, String itemName, String itemThumbUrl, String itemStatus,
@@ -69,7 +72,7 @@ public class TodoItemService {
         todoItem.setModifiedTime(System.currentTimeMillis());
         realm.commitTransaction();
 
-        PlanService.getInstance().updatePlansProgress(todoItem);
+        PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
     }
 
     public TodoItem getItem(int id) {

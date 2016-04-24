@@ -16,8 +16,8 @@ import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.fragments.DatePickerFragment;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
-import com.catwoman.lifetodo.services.CategoryService;
-import com.catwoman.lifetodo.services.PlanService;
+import com.catwoman.lifetodo.dbs.CategoryDb;
+import com.catwoman.lifetodo.dbs.PlanDb;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -47,8 +47,8 @@ public class AddPlanActivity extends AppCompatActivity
     private RealmResults<Category> categories;
     private boolean isEdit = false;
     private Plan plan;
-    private CategoryService categoryService;
-    private PlanService planService;
+    private CategoryDb categoryDb;
+    private PlanDb planDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +57,14 @@ public class AddPlanActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
-        categoryService = CategoryService.getInstance();
-        planService = PlanService.getInstance();
+        categoryDb = CategoryDb.getInstance();
+        planDb = PlanDb.getInstance();
 
-        categories = categoryService.getCategories();
+        categories = categoryDb.getCategories();
 
         int id = getIntent().getIntExtra("id", 0);
         if (0 != id) {
-            plan = planService.getPlan(id);
+            plan = planDb.getPlan(id);
             if (null == plan) {
                 Toast.makeText(this, R.string.error_plan_not_found, Toast.LENGTH_LONG).show();
                 finish();
@@ -150,7 +150,7 @@ public class AddPlanActivity extends AppCompatActivity
         Category category = categories.get(spCategory.getSelectedItemPosition());
         int goal = Integer.valueOf(etGoal.getText().toString());
 
-        planService.addOrUpdatePlan(id, title, category, goal, startTimeInMillis, endTimeInMillis);
+        planDb.addOrUpdatePlan(id, title, category, goal, startTimeInMillis, endTimeInMillis);
 
         String message = getString(isEdit ? R.string.message_plan_updated : R.string.message_plan_added);
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();

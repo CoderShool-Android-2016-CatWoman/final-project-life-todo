@@ -16,8 +16,8 @@ import com.catwoman.lifetodo.adapters.TodoItemsAdapter;
 import com.catwoman.lifetodo.fragments.AddTextFragment;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.TodoItem;
-import com.catwoman.lifetodo.services.CategoryService;
-import com.catwoman.lifetodo.services.TodoItemService;
+import com.catwoman.lifetodo.dbs.CategoryDb;
+import com.catwoman.lifetodo.dbs.TodoItemDb;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -55,8 +55,8 @@ public class TodoItemsActivity extends AppCompatActivity {
     private RealmResults<TodoItem> todoItems;
     private AddTextFragment editNameDialogFragment;
     private Category category;
-    private CategoryService categoryService;
-    private TodoItemService todoItemService;
+    private CategoryDb categoryDb;
+    private TodoItemDb todoItemDb;
     private TodoItemsAdapter todoItemsAdapter;
     private StaggeredGridLayoutManager layoutManager;
 
@@ -69,11 +69,11 @@ public class TodoItemsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        categoryService = CategoryService.getInstance();
-        todoItemService = TodoItemService.getInstance();
+        categoryDb = CategoryDb.getInstance();
+        todoItemDb = TodoItemDb.getInstance();
 
         int categoryId = getIntent().getIntExtra("categoryId", 0);
-        category = categoryService.getCategory(categoryId);
+        category = categoryDb.getCategory(categoryId);
         getSupportActionBar().setTitle(category.getTitle());
 
         if (category.getName().equals("place")) {
@@ -85,7 +85,7 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     private void populateViews() {
-        todoItems = todoItemService.getItems(category);
+        todoItems = todoItemDb.getItems(category);
         todoItemsAdapter = new TodoItemsAdapter(todoItems);
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvItems.setAdapter(todoItemsAdapter);
@@ -175,7 +175,7 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     private void addPlace(Place place) {
-        todoItemService.addOrUpdateItem(
+        todoItemDb.addOrUpdateItem(
                 0,
                 String.valueOf(place.getName()),
                 "",

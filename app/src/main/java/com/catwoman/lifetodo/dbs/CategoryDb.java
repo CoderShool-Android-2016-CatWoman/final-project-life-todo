@@ -1,4 +1,4 @@
-package com.catwoman.lifetodo.services;
+package com.catwoman.lifetodo.dbs;
 
 import com.catwoman.lifetodo.models.Category;
 
@@ -9,14 +9,14 @@ import io.realm.Sort;
 /**
  * Created by annt on 4/23/16.
  */
-public class CategoryService {
-    private static final CategoryService INSTANCE = new CategoryService();
+public class CategoryDb {
+    private static final CategoryDb INSTANCE = new CategoryDb();
     private Realm realm = Realm.getDefaultInstance();
 
-    private CategoryService() {
+    private CategoryDb() {
     }
 
-    public static CategoryService getInstance() {
+    public static CategoryDb getInstance() {
         return INSTANCE;
     }
 

@@ -1,8 +1,7 @@
-package com.catwoman.lifetodo.services;
+package com.catwoman.lifetodo.dbs;
 
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.Plan;
-import com.catwoman.lifetodo.models.TodoItem;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -11,14 +10,14 @@ import io.realm.Sort;
 /**
  * Created by annt on 4/23/16.
  */
-public class PlanService {
-    private static final PlanService INSTANCE = new PlanService();
+public class PlanDb {
+    private static final PlanDb INSTANCE = new PlanDb();
     private Realm realm = Realm.getDefaultInstance();
 
-    private PlanService() {
+    private PlanDb() {
     }
 
-    public static PlanService getInstance() {
+    public static PlanDb getInstance() {
         return INSTANCE;
     }
 
@@ -48,7 +47,7 @@ public class PlanService {
         plan.setGoal(goal);
         plan.setStartTime(startTime);
         plan.setEndTime(endTime);
-        plan.setProgress(TodoItemService.getInstance().getDoneItemsCount(plan));
+        plan.setProgress(TodoItemDb.getInstance().getDoneItemsCount(plan));
         realm.commitTransaction();
     }
 
@@ -56,9 +55,9 @@ public class PlanService {
         return realm.where(Plan.class).equalTo("id", id).findFirst();
     }
 
-    public RealmResults<Plan> getPlans(TodoItem todoItem) {
+    public RealmResults<Plan> getPlans(Category category) {
         return realm.where(Plan.class)
-                .equalTo("category.id", todoItem.getCategory().getId())
+                .equalTo("category.id", category.getId())
                 .findAll();
     }
 
@@ -66,12 +65,12 @@ public class PlanService {
         return realm.where(Plan.class).findAllSorted("id", Sort.ASCENDING);
     }
 
-    public void updatePlansProgress(TodoItem todoItem) {
-        RealmResults<Plan> plans = this.getPlans(todoItem);
+    public void updatePlansProgress(Category category) {
+        RealmResults<Plan> plans = this.getPlans(category);
         realm.beginTransaction();
         for (int i = 0; i < plans.size(); i++) {
             Plan plan = plans.get(i);
-            plan.setProgress(TodoItemService.getInstance().getDoneItemsCount(plan));
+            plan.setProgress(TodoItemDb.getInstance().getDoneItemsCount(plan));
         }
         realm.commitTransaction();
     }

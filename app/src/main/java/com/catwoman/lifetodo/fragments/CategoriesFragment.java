@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.CategoriesAdapter;
 import com.catwoman.lifetodo.models.Category;
-import com.catwoman.lifetodo.services.CategoryService;
+import com.catwoman.lifetodo.dbs.CategoryDb;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,7 +28,7 @@ public class CategoriesFragment extends Fragment {
     private RealmResults<Category> categories;
     private CategoriesAdapter adapter;
     private GridLayoutManager layoutManager;
-    private CategoryService categoryService;
+    private CategoryDb categoryDb;
 
     @Nullable
     @Override
@@ -36,8 +36,8 @@ public class CategoriesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_categories, container, false);
         ButterKnife.bind(this, view);
 
-        categoryService = CategoryService.getInstance();
-        categories = categoryService.getCategories();
+        categoryDb = CategoryDb.getInstance();
+        categories = categoryDb.getCategories();
         adapter = new CategoriesAdapter(categories);
         layoutManager = new GridLayoutManager(getContext(), SPAN_COUNT);
 

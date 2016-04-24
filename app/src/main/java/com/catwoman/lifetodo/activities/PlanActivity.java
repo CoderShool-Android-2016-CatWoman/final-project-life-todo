@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.models.Plan;
-import com.catwoman.lifetodo.services.PlanService;
+import com.catwoman.lifetodo.dbs.PlanDb;
 import com.txusballesteros.widgets.FitChart;
 import com.txusballesteros.widgets.FitChartValue;
 
@@ -46,7 +46,7 @@ public class PlanActivity extends AppCompatActivity {
     @Bind(R.id.tvRemainingTime)
     TextView tvRemainingTime;
     private Plan plan;
-    private PlanService planService;
+    private PlanDb planDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +55,10 @@ public class PlanActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
 
-        planService = PlanService.getInstance();
+        planDb = PlanDb.getInstance();
 
         int id = getIntent().getIntExtra("id", 0);
-        plan = planService.getPlan(id);
+        plan = planDb.getPlan(id);
         if (null == plan) {
             Toast.makeText(this, R.string.error_plan_not_found, Toast.LENGTH_LONG).show();
             finish();
@@ -122,7 +122,7 @@ public class PlanActivity extends AppCompatActivity {
     }
 
     private void deletePlan() {
-        planService.removePlan(plan.getId());
+        planDb.removePlan(plan.getId());
 
         Toast.makeText(this, getString(R.string.message_plan_has_been_deleted), Toast.LENGTH_LONG).show();
         finish();

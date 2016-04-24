@@ -14,13 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBgItemTodo"
-        android:padding="@dimen/activity_vertical_margin">
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/ivThumb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"/>
 
@@ -28,7 +27,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ivThumb"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:text="New Text"
+            android:textAppearance="?android:attr/textAppearanceListItem"
             android:id="@+id/tvName" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

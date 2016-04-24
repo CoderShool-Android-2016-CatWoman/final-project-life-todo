@@ -25,11 +25,11 @@
             android:name=".activities.TodoItemsActivity"
             android:label="@string/title_activity_todo_items"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.HomeActivity">
+            android:parentActivityName=".activities.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.HomeActivity"/>
+                android:value=".activities.HomeActivity" />
         </activity>
         <activity
             android:name=".activities.AddPlanActivity"
@@ -49,7 +49,15 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_api_key"/>
+            android:value="@string/google_api_key" />
+
+        <activity
+            android:name=".activities.TodoItemActivity"
+            android:parentActivityName=".activities.TodoItemsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.TodoItemsActivity"/>
+        </activity>
     </application>
 
 </manifest>

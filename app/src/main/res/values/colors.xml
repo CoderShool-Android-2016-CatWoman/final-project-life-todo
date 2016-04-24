@@ -24,4 +24,6 @@
     <color name="colorTextDark">#000000</color>
     <color name="colorBgItemTodo">#FFFFFF</color>
     <color name="colorBgItemTodoDone">#C8E6C9</color>
+    <color name="colorBgThumb">#EEEEEE</color>
+    <color name="colorBgTitle">#DDDDDD</color>
 </resources>

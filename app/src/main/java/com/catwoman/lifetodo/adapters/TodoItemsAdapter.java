@@ -1,6 +1,7 @@
 package com.catwoman.lifetodo.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.catwoman.lifetodo.R;
+import com.catwoman.lifetodo.activities.TodoItemActivity;
 import com.catwoman.lifetodo.dbs.TodoItemDb;
 import com.catwoman.lifetodo.models.TodoItem;
 import com.catwoman.lifetodo.utils.MapsUtil;
@@ -89,13 +91,11 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         holder.tvName.setText(todoItem.getItemName());
 
         if (!todoItem.getItemThumbUrl().equals("")) {
-            Glide.with(context).load(todoItem.getItemThumbUrl())
-                    .placeholder(R.drawable.ic_travel_gray_out).into(holder.ivThumb);
+            Glide.with(context).load(todoItem.getItemThumbUrl()).into(holder.ivThumb);
         } else if (todoItem.getCategory().getName().equals("place")) {
-            String mapUrl = MapsUtil.getStaticMapUrl(todoItem.getLocation(),
-                    context.getString(R.string.google_api_key));
-            Glide.with(context).load(mapUrl).placeholder(R.drawable.ic_travel_gray_out)
-                    .into(holder.ivThumb);
+            String center = !todoItem.getAddress().equals("") ? todoItem.getAddress() : todoItem.getItemName();
+            String mapUrl = MapsUtil.getStaticMapUrl(center, context.getString(R.string.google_api_key));
+            Glide.with(context).load(mapUrl).placeholder(R.drawable.ic_travel_gray_out).into(holder.ivThumb);
         }
     }
 
@@ -111,6 +111,13 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private void onItemClick(int position) {
         TodoItem todoItem = todoItems.get(position);
+        Intent intent = new Intent(context, TodoItemActivity.class);
+        intent.putExtra("id", todoItem.getId());
+        context.startActivity(intent);
+    }
+
+    private void onItemLongClick(int position) {
+        TodoItem todoItem = todoItems.get(position);
         String status;
         String message;
         if (todoItem.getItemStatus().equals("InProgress")) {
@@ -122,11 +129,6 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
         TodoItemDb.getInstance().updateItem(todoItem.getId(), status);
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void onItemLongClick(int position) {
-        TodoItem todoItem = todoItems.get(position);
-        TodoItemDb.getInstance().removeItem(todoItem.getId());
     }
 
     class ViewHolderDefault extends RecyclerView.ViewHolder {

@@ -25,63 +25,23 @@ import io.realm.RealmResults;
 /**
  * Created by annt on 4/24/16.
  */
-public class TodoItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.ViewHolder> {
     private Context context;
     private RealmResults<TodoItem> todoItems;
-    private static final int ITEM_VIEW_TYPE_DEFAULT = 1;
-    private static final int ITEM_VIEW_TYPE_NO_THUMB = 2;
 
     public TodoItemsAdapter(RealmResults<TodoItem> todoItems) {
         this.todoItems = todoItems;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == ITEM_VIEW_TYPE_NO_THUMB) {
-            return onCreateViewHolderNothumb(parent, viewType);
-        }
-        return onCreateViewHolderDefault(parent, viewType);
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (getItemViewType(position) == ITEM_VIEW_TYPE_NO_THUMB) {
-            onBindViewHolderNoThumb((ViewHolderNoThumb) holder, position);
-            return;
-        }
-        onBindViewHolderDefault((ViewHolderDefault) holder, position);
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        TodoItem todoItem = todoItems.get(position);
-        if (!todoItem.getCategory().getName().equals("place") && todoItem.getItemThumbUrl().equals("")) {
-            return ITEM_VIEW_TYPE_NO_THUMB;
-        }
-        return ITEM_VIEW_TYPE_DEFAULT;
-    }
-
-    @Override
-    public int getItemCount() {
-        if (null == todoItems) {
-            return 0;
-        }
-        return todoItems.size();
-    }
-
-    private ViewHolderDefault onCreateViewHolderDefault(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.item_todo, parent, false);
-        return new ViewHolderDefault(view);
+        return new ViewHolder(view);
     }
 
-    private ViewHolderNoThumb onCreateViewHolderNothumb(ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.item_todo_no_thumb, parent, false);
-        return new ViewHolderNoThumb(view);
-    }
-
-    private void onBindViewHolderDefault(final ViewHolderDefault holder, int position) {
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
         TodoItem todoItem = todoItems.get(position);
 
         int color = todoItem.getItemStatus().equals("InProgress") ? R.color.colorBgItemTodo :
@@ -99,14 +59,12 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    private void onBindViewHolderNoThumb(final ViewHolderNoThumb holder, int position) {
-        TodoItem todoItem = todoItems.get(position);
-
-        int color = todoItem.getItemStatus().equals("InProgress") ? R.color.colorBgItemTodo :
-                R.color.colorBgItemTodoDone;
-
-        holder.rlItem.setBackgroundColor(context.getResources().getColor(color));
-        holder.tvName.setText(todoItem.getItemName());
+    @Override
+    public int getItemCount() {
+        if (null == todoItems) {
+            return 0;
+        }
+        return todoItems.size();
     }
 
     private void onItemClick(int position) {
@@ -131,7 +89,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    class ViewHolderDefault extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.rlItem)
         RelativeLayout rlItem;
         @Bind(R.id.ivThumb)
@@ -139,34 +97,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         @Bind(R.id.tvName)
         TextView tvName;
 
-        public ViewHolderDefault(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClick(getLayoutPosition());
-                }
-            });
-
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    onItemLongClick(getLayoutPosition());
-                    return true;
-                }
-            });
-        }
-    }
-
-    class ViewHolderNoThumb extends RecyclerView.ViewHolder {
-        @Bind(R.id.rlItem)
-        RelativeLayout rlItem;
-        @Bind(R.id.tvName)
-        TextView tvName;
-
-        public ViewHolderNoThumb(View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 

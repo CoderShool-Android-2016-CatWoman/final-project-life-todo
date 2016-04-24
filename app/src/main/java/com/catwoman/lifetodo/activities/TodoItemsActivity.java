@@ -13,11 +13,11 @@ import android.widget.TextView;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.TodoItemsAdapter;
+import com.catwoman.lifetodo.dbs.CategoryDb;
+import com.catwoman.lifetodo.dbs.TodoItemDb;
 import com.catwoman.lifetodo.fragments.AddTextFragment;
 import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.models.TodoItem;
-import com.catwoman.lifetodo.dbs.CategoryDb;
-import com.catwoman.lifetodo.dbs.TodoItemDb;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -59,6 +59,7 @@ public class TodoItemsActivity extends AppCompatActivity {
     private TodoItemDb todoItemDb;
     private TodoItemsAdapter todoItemsAdapter;
     private StaggeredGridLayoutManager layoutManager;
+    private RealmChangeListener changeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,30 @@ public class TodoItemsActivity extends AppCompatActivity {
         setListeners();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                Log.i(TAG, "Place: " + place.toString());
+                addPlace(place);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        todoItems.removeChangeListener(changeListener);
+    }
+
     private void populateViews() {
         todoItems = todoItemDb.getItems(category);
         todoItemsAdapter = new TodoItemsAdapter(todoItems);
@@ -97,13 +122,14 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     private void setListeners() {
-        todoItems.addChangeListener(new RealmChangeListener() {
+        changeListener = new RealmChangeListener() {
             @Override
             public void onChange() {
                 todoItemsAdapter.notifyDataSetChanged();
                 toggleMessage();
             }
-        });
+        };
+        todoItems.addChangeListener(changeListener);
 
         famAdd.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
@@ -156,31 +182,13 @@ public class TodoItemsActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i(TAG, "Place: " + place.toString());
-                addPlace(place);
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
-    }
-
     private void addPlace(Place place) {
         todoItemDb.addOrUpdateItem(
                 0,
                 String.valueOf(place.getName()),
                 "",
                 "InProgress",
-                String.valueOf(place.getAddress()),
+                "",
                 String.valueOf(place.getName()),
                 String.valueOf(place.getAddress()),
                 place.getLatLng().latitude,

@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.adapters.PlansAdapter;
-import com.catwoman.lifetodo.models.Plan;
 import com.catwoman.lifetodo.dbs.PlanDb;
+import com.catwoman.lifetodo.models.Plan;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,6 +32,7 @@ public class PlansFragment extends Fragment {
     private PlansAdapter adapter;
     private LinearLayoutManager layoutManager;
     private PlanDb planDb;
+    private RealmChangeListener changeListener;
 
     @Nullable
     @Override
@@ -53,15 +54,20 @@ public class PlansFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        plans.removeChangeListener(changeListener);
+    }
+
     private void setListeners() {
-        RealmChangeListener changeListener = new RealmChangeListener() {
+        changeListener = new RealmChangeListener() {
             @Override
             public void onChange() {
                 toggleMessage();
                 adapter.notifyDataSetChanged();
             }
         };
-
         plans.addChangeListener(changeListener);
     }
 

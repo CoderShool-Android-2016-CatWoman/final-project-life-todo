@@ -23,7 +23,9 @@
     <color name="colorBackgroundItemPlan">#FFFFFF</color>
     <color name="colorTextDark">#000000</color>
     <color name="colorBgItemTodo">#FFFFFF</color>
-    <color name="colorBgItemTodoDone">#C8E6C9</color>
+    <color name="colorBgItemTodoDone">#AED581</color>
     <color name="colorBgThumb">#EEEEEE</color>
-    <color name="colorBgTitle">#DDDDDD</color>
+    <color name="colorItemTitle">#FFFFFF</color>
+    <color name="colorBgItemTitle">#78909C</color>
+    <color name="colorTextGray">#616161</color>
 </resources>

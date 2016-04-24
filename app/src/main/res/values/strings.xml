@@ -48,4 +48,6 @@
     <string name="confirm_delete_item_title">Delete This Item</string>
     <string name="confirm_delete_item_message">Are you sure you want to delete this item?</string>
     <string name="message_item_has_been_deleted">Item has been deleted.</string>
+    <string name="action_change">Change</string>
+    <string name="action_map">Map</string>
 </resources>

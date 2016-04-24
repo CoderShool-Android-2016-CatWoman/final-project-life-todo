@@ -50,12 +50,16 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         holder.rlItem.setBackgroundColor(context.getResources().getColor(color));
         holder.tvName.setText(todoItem.getItemName());
 
+        String thumbUrl = "";
         if (!todoItem.getItemThumbUrl().equals("")) {
-            Glide.with(context).load(todoItem.getItemThumbUrl()).into(holder.ivThumb);
-        } else if (todoItem.getCategory().getName().equals("place")) {
-            String center = !todoItem.getAddress().equals("") ? todoItem.getAddress() : todoItem.getItemName();
-            String mapUrl = MapsUtil.getStaticMapUrl(center, context.getString(R.string.google_api_key));
-            Glide.with(context).load(mapUrl).placeholder(R.drawable.ic_travel_gray_out).into(holder.ivThumb);
+            thumbUrl = todoItem.getItemThumbUrl();
+        } else if (!todoItem.getAddress().equals("")) {
+            thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 200, 200, context.getString(R.string.google_api_key));
+        }
+        if (!thumbUrl.equals("")) {
+            Glide.with(context).load(thumbUrl).into(holder.ivThumb);
+        } else {
+            holder.ivThumb.setImageResource(0);
         }
     }
 

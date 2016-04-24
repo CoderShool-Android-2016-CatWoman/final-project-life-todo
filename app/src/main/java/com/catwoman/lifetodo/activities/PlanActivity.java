@@ -14,8 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.catwoman.lifetodo.R;
-import com.catwoman.lifetodo.models.Plan;
 import com.catwoman.lifetodo.dbs.PlanDb;
+import com.catwoman.lifetodo.models.Plan;
 import com.txusballesteros.widgets.FitChart;
 import com.txusballesteros.widgets.FitChartValue;
 
@@ -47,6 +47,7 @@ public class PlanActivity extends AppCompatActivity {
     TextView tvRemainingTime;
     private Plan plan;
     private PlanDb planDb;
+    private RealmChangeListener changeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,26 +65,8 @@ public class PlanActivity extends AppCompatActivity {
             finish();
         }
 
-        setListeners();
         populateViews();
-    }
-
-    private void setListeners() {
-        plan.addChangeListener(new RealmChangeListener() {
-            @Override
-            public void onChange() {
-                populateViews();
-            }
-        });
-
-        fcProgress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(PlanActivity.this, TodoItemsActivity.class);
-                intent.putExtra("categoryId", plan.getCategory().getId());
-                startActivity(intent);
-            }
-        });
+        setListeners();
     }
 
     @Override
@@ -105,6 +88,12 @@ public class PlanActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        plan.removeChangeListener(changeListener);
     }
 
     private void confirmDeletePlan() {
@@ -167,6 +156,25 @@ public class PlanActivity extends AppCompatActivity {
         } else {
             tvRemainingTime.setText("");
         }
+    }
+
+    private void setListeners() {
+        changeListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                populateViews();
+            }
+        };
+        plan.addChangeListener(changeListener);
+
+        fcProgress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PlanActivity.this, TodoItemsActivity.class);
+                intent.putExtra("categoryId", plan.getCategory().getId());
+                startActivity(intent);
+            }
+        });
     }
 
     private String getDateString(long timeStamp, String format) {

@@ -1,13 +1,17 @@
 package com.catwoman.lifetodo.activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,9 +20,13 @@ import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.dbs.TodoItemDb;
 import com.catwoman.lifetodo.models.TodoItem;
 import com.catwoman.lifetodo.utils.MapsUtil;
+import com.github.florent37.glidepalette.GlidePalette;
+
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.RealmChangeListener;
 
 public class TodoItemActivity extends AppCompatActivity {
     @Bind(R.id.ivThumb)
@@ -29,7 +37,14 @@ public class TodoItemActivity extends AppCompatActivity {
     TextView tvStatus;
     @Bind(R.id.tvStatusAction)
     TextView tvStatusAction;
+    @Bind(R.id.rlAddress)
+    RelativeLayout rlAddress;
+    @Bind(R.id.tvAddress)
+    TextView tvAddress;
+    @Bind(R.id.tvDescription)
+    TextView tvDescription;
     private TodoItem todoItem;
+    private RealmChangeListener changeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +63,7 @@ public class TodoItemActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(todoItem.getItemName());
 
         populateViews();
+        setListeners();
     }
 
     @Override
@@ -71,6 +87,26 @@ public class TodoItemActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        todoItem.removeChangeListener(changeListener);
+    }
+
+    public void onStatusActionClick(View v) {
+        String status = todoItem.getItemStatus().equals("Done") ? "InProgress" : "Done";
+        TodoItemDb.getInstance().updateItem(todoItem.getId(), status);
+    }
+
+    public void onAddressActionClick(View v) {
+        String uri = String.format(Locale.ENGLISH, "geo:%f,%f?z=10", todoItem.getLatitude(),
+                todoItem.getLongitude());
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
         }
     }
 
@@ -104,12 +140,22 @@ public class TodoItemActivity extends AppCompatActivity {
     }
 
     private void populateViews() {
+        String thumbUrl = "";
         if (!todoItem.getItemThumbUrl().equals("")) {
-            Glide.with(this).load(todoItem.getItemThumbUrl()).centerCrop().dontTransform().into(ivThumb);
-        } else if (todoItem.getCategory().getName().equals("place")) {
-            String center = !todoItem.getAddress().equals("") ? todoItem.getAddress() : todoItem.getItemName();
-            String mapUrl = MapsUtil.getStaticMapUrl(center, this.getString(R.string.google_api_key));
-            Glide.with(this).load(mapUrl).centerCrop().dontTransform().into(ivThumb);
+            thumbUrl = todoItem.getItemThumbUrl();
+        } else if (!todoItem.getAddress().equals("")) {
+            thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 400, 225, this.getString(R.string.google_api_key));
+        }
+
+        if (!thumbUrl.equals("")) {
+            Glide.with(this).load(thumbUrl)
+                    .listener(GlidePalette.with(thumbUrl)
+                            .use(GlidePalette.Profile.VIBRANT_DARK)
+                            .intoBackground(tvName)
+                            .intoTextColor(tvName))
+                    .centerCrop()
+                    .dontTransform()
+                    .into(ivThumb);
         } else {
             ivThumb.setImageResource(getResources().getIdentifier(
                     "ic_" + todoItem.getCategory().getDrawable() + "_gray_out", "drawable", getPackageName()));
@@ -119,12 +165,32 @@ public class TodoItemActivity extends AppCompatActivity {
         tvName.setText(todoItem.getItemName());
 
         String status = getString(R.string.status_not_completed);
-        String statusAction = getString(R.string.mark_completed);
+        boolean statusActive = false;
         if (todoItem.getItemStatus().equals("Done")) {
             status = getString(R.string.status_completed);
-            statusAction = getString(R.string.mark_not_completed);
+            statusActive = true;
         }
         tvStatus.setText(status);
-        tvStatusAction.setText(statusAction);
+        tvStatus.setActivated(statusActive);
+
+        if (!todoItem.getAddress().equals("")) {
+            tvAddress.setText(todoItem.getAddress());
+            rlAddress.setVisibility(View.VISIBLE);
+        }
+
+        if (!todoItem.getItemDescription().equals("")) {
+            tvDescription.setText(todoItem.getItemDescription());
+            tvDescription.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setListeners() {
+        changeListener = new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                populateViews();
+            }
+        };
+        todoItem.addChangeListener(changeListener);
     }
 }

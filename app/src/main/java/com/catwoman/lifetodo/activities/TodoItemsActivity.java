@@ -2,7 +2,6 @@ package com.catwoman.lifetodo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -53,7 +52,6 @@ public class TodoItemsActivity extends AppCompatActivity {
     @Bind(R.id.fabAddLocation)
     FloatingActionButton fabAddLocation;
     private RealmResults<TodoItem> todoItems;
-    private AddTextFragment editNameDialogFragment;
     private Category category;
     private CategoryDb categoryDb;
     private TodoItemDb todoItemDb;
@@ -142,13 +140,6 @@ public class TodoItemsActivity extends AppCompatActivity {
                 vOverlay.setVisibility(View.GONE);
             }
         });
-
-        fabAddText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditDialog();
-            }
-        });
     }
 
     private void toggleMessage() {
@@ -159,12 +150,11 @@ public class TodoItemsActivity extends AppCompatActivity {
         famAdd.collapse();
     }
 
-    private void showEditDialog() {
+    public void showAddText(View v) {
         famAdd.collapseImmediately();
 
-        FragmentManager fm = getSupportFragmentManager();
-        editNameDialogFragment = AddTextFragment.newInstance("", category);
-        editNameDialogFragment.show(fm, "fragment_edit_name");
+        AddTextFragment fragment = AddTextFragment.newInstance(category, null);
+        fragment.show(getSupportFragmentManager(), "fragment_add_text");
     }
 
     public void showAddLocation(View v) {
@@ -183,17 +173,7 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     private void addPlace(Place place) {
-        todoItemDb.addOrUpdateItem(
-                0,
-                String.valueOf(place.getName()),
-                "",
-                "InProgress",
-                "",
-                String.valueOf(place.getName()),
-                String.valueOf(place.getAddress()),
-                place.getLatLng().latitude,
-                place.getLatLng().longitude,
-                category
-        );
+        todoItemDb.addItem(String.valueOf(place.getName()), String.valueOf(place.getAddress()),
+                place.getLatLng().latitude, place.getLatLng().longitude, category);
     }
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/itemstodo"
-    android:background="@color/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:fitsSystemWindows="true"
     tools:context="com.catwoman.lifetodo.activities.TodoItemsActivity">
 
@@ -29,11 +29,11 @@
     <!-- View to show the alpha background -->
     <View
         android:id="@+id/vOverlay"
-        android:onClick="collapseFAM"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background"
         android:alpha="0.7"
+        android:background="@color/background"
+        android:onClick="collapseFAM"
         android:visibility="gone" />
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
@@ -43,8 +43,8 @@
         android:layout_gravity="bottom|right"
         fab:fab_addButtonColorNormal="@color/pink"
         fab:fab_addButtonColorPressed="@color/pink_pressed"
-        fab:fab_addButtonSize="normal"
         fab:fab_addButtonPlusIconColor="@color/white"
+        fab:fab_addButtonSize="normal"
         fab:fab_expandDirection="up"
         fab:fab_labelStyle="@style/menu_labels_style">
 
@@ -54,41 +54,42 @@
             android:layout_height="wrap_content"
             android:onClick="showAddLocation"
             android:visibility="gone"
-            fab:fab_icon="@drawable/ic_location_on_white_24dp"
-            fab:fab_title="Location"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimaryLight"
-            fab:fab_size="mini"/>
+            fab:fab_icon="@drawable/ic_location_on_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_title="Location" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_photo_camera_white_24dp"
-            fab:fab_title="Camera"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimaryLight"
-            fab:fab_size="mini"/>
+            fab:fab_icon="@drawable/ic_photo_camera_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_title="Camera" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_insert_photo_white_24dp"
-            fab:fab_title="Photo"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimaryLight"
-            fab:fab_size="mini"/>
+            fab:fab_icon="@drawable/ic_insert_photo_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_title="Photo" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_edit_white_24dp"
-            fab:fab_title="Text"
+            android:onClick="showAddText"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimaryLight"
-            fab:fab_size="mini"/>
+            fab:fab_icon="@drawable/ic_edit_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_title="Text" />
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </android.support.design.widget.CoordinatorLayout>

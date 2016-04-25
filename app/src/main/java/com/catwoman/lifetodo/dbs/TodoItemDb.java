@@ -43,6 +43,84 @@ public class TodoItemDb {
         PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
     }
 
+    public void updateItem(int id, String location, String address, double latitude,
+                           double longitude) {
+        TodoItem todoItem = this.getItem(id);
+        realm.beginTransaction();
+        todoItem.setLocation(location);
+        todoItem.setAddress(address);
+        todoItem.setLatitude(latitude);
+        todoItem.setLongitude(longitude);
+        todoItem.setModifiedTime(System.currentTimeMillis());
+        realm.commitTransaction();
+
+        PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
+    }
+
+    public void updateItem(int id, String itemName, String itemDescription) {
+        TodoItem todoItem = this.getItem(id);
+        realm.beginTransaction();
+        todoItem.setItemName(itemName);
+        todoItem.setItemDescription(itemDescription);
+        todoItem.setModifiedTime(System.currentTimeMillis());
+        realm.commitTransaction();
+
+        PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
+    }
+
+    public void addItem(String location, String address, double latitude, double longitude,
+                        Category category) {
+        realm.beginTransaction();
+        int id;
+        try {
+            id = realm.where(TodoItem.class).max("id").intValue() + 1;
+        } catch (Exception e) {
+            id = 1;
+        }
+        TodoItem todoItem = realm.createObject(TodoItem.class);
+        todoItem.setId(id);
+        todoItem.setCreatedTime(System.currentTimeMillis());
+        todoItem.setItemName(location);
+        todoItem.setItemThumbUrl("");
+        todoItem.setItemStatus("InProgress");
+        todoItem.setItemDescription("");
+        todoItem.setLocation(location);
+        todoItem.setAddress(address);
+        todoItem.setLatitude(latitude);
+        todoItem.setLongitude(longitude);
+        todoItem.setCategory(category);
+        todoItem.setModifiedTime(System.currentTimeMillis());
+        realm.commitTransaction();
+
+        PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
+    }
+
+    public void addItem(String itemName, String itemDescription, Category category) {
+        realm.beginTransaction();
+        int id;
+        try {
+            id = realm.where(TodoItem.class).max("id").intValue() + 1;
+        } catch (Exception e) {
+            id = 1;
+        }
+        TodoItem todoItem = realm.createObject(TodoItem.class);
+        todoItem.setId(id);
+        todoItem.setCreatedTime(System.currentTimeMillis());
+        todoItem.setItemName(itemName);
+        todoItem.setItemThumbUrl("");
+        todoItem.setItemStatus("InProgress");
+        todoItem.setItemDescription(itemDescription);
+        todoItem.setLocation("");
+        todoItem.setAddress("");
+        todoItem.setLatitude(0);
+        todoItem.setLongitude(0);
+        todoItem.setCategory(category);
+        todoItem.setModifiedTime(System.currentTimeMillis());
+        realm.commitTransaction();
+
+        PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
+    }
+
     public void addOrUpdateItem(int id, String itemName, String itemThumbUrl, String itemStatus,
                                 String itemDescription, String location, String address,
                                 double latitude, double longitude, Category category) {

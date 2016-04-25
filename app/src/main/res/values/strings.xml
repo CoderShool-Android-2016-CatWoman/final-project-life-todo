@@ -50,4 +50,6 @@
     <string name="message_item_has_been_deleted">Item has been deleted.</string>
     <string name="action_change">Change</string>
     <string name="action_map">Map</string>
+    <string name="label_name">Name</string>
+    <string name="label_description">Description</string>
 </resources>

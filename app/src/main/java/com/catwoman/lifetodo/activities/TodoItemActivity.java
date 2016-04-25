@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,9 +19,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.dbs.TodoItemDb;
+import com.catwoman.lifetodo.fragments.AddTextFragment;
 import com.catwoman.lifetodo.models.TodoItem;
 import com.catwoman.lifetodo.utils.MapsUtil;
 import com.github.florent37.glidepalette.GlidePalette;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import java.util.Locale;
 
@@ -29,6 +36,8 @@ import butterknife.ButterKnife;
 import io.realm.RealmChangeListener;
 
 public class TodoItemActivity extends AppCompatActivity {
+    private static final String TAG = "TodoItemActivity";
+    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     @Bind(R.id.ivThumb)
     ImageView ivThumb;
     @Bind(R.id.tvName)
@@ -60,8 +69,6 @@ public class TodoItemActivity extends AppCompatActivity {
             finish();
         }
 
-        getSupportActionBar().setTitle(todoItem.getItemName());
-
         populateViews();
         setListeners();
     }
@@ -87,6 +94,24 @@ public class TodoItemActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                Log.i(TAG, "Place: " + place.toString());
+                updateLocation(place);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
         }
     }
 
@@ -132,18 +157,36 @@ public class TodoItemActivity extends AppCompatActivity {
     }
 
     private void editItemLocation() {
+        try {
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(this);
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+    }
 
+    private void updateLocation(Place place) {
+        TodoItemDb.getInstance().updateItem(todoItem.getId(), String.valueOf(place.getName()),
+                String.valueOf(place.getAddress()), place.getLatLng().latitude,
+                place.getLatLng().longitude);
     }
 
     private void editItemInfo() {
-
+        AddTextFragment fragment = AddTextFragment.newInstance(todoItem.getCategory(), todoItem);
+        fragment.show(getSupportFragmentManager(), "fragment_add_text");
     }
 
     private void populateViews() {
+        getSupportActionBar().setTitle(todoItem.getItemName());
+
         String thumbUrl = "";
         if (!todoItem.getItemThumbUrl().equals("")) {
             thumbUrl = todoItem.getItemThumbUrl();
-        } else if (!todoItem.getAddress().equals("")) {
+        } else if (todoItem.getCategory().getName().equals("place") && !todoItem.getAddress().equals("")) {
             thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 400, 225, this.getString(R.string.google_api_key));
         }
 

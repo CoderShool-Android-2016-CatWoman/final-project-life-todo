@@ -1,80 +1,105 @@
 package com.catwoman.lifetodo.fragments;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.catwoman.lifetodo.R;
-import com.catwoman.lifetodo.interfaces.AddItemListener;
-import com.catwoman.lifetodo.models.Category;
 import com.catwoman.lifetodo.dbs.TodoItemDb;
+import com.catwoman.lifetodo.models.Category;
+import com.catwoman.lifetodo.models.TodoItem;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
- * Created by annt on 4/9/16.
+ * Created by annt on 4/25/16.
  */
-public class AddTextFragment extends android.support.v4.app.DialogFragment {
-    private EditText mEditText;
-    private Button mBtnSave;
-    private AddItemListener addItemListener;
+public class AddTextFragment extends DialogFragment {
+    @Bind(R.id.etName)
+    EditText etName;
+    @Bind(R.id.etDescription)
+    EditText etDescription;
 
-    public AddTextFragment() {
-        // Empty constructor is required for DialogFragment
-        // Make sure not to add arguments to the constructor
-        // Use `newInstance` instead as shown below
-    }
+    public AddTextFragment() {}
 
-    public static AddTextFragment newInstance(String title, Category category) {
-        AddTextFragment frag = new AddTextFragment();
+    public static AddTextFragment newInstance(Category category, TodoItem todoItem) {
         Bundle args = new Bundle();
-        args.putString("title", title);
         args.putParcelable("category", category);
-        frag.setArguments(args);
-        return frag;
+        args.putParcelable("todoItem", todoItem);
+
+        AddTextFragment fragment = new AddTextFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
-    public void setAddItemListener(AddItemListener addItemListener) {
-        this.addItemListener = addItemListener;
-    }
-
+    @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_item_edit, container);
-    }
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // Get field from view
-        mEditText = (EditText) view.findViewById(R.id.etItemName);
-        mBtnSave = (Button) view.findViewById(R.id.btnSaveItem);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_add_text, null);
+        ButterKnife.bind(this, view);
 
-        // Fetch arguments from bundle and set title
-        String title = getArguments().getString("title", "Enter Item Name");
-        getDialog().setTitle(title);
-        // Show soft keyboard automatically and request focus to field
-        mEditText.requestFocus();
-        getDialog().getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        TodoItem todoItem = getArguments().getParcelable("todoItem");
+        builder.setView(view)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Save", null);
 
+        AlertDialog dialog = builder.create();
 
-        mBtnSave.setOnClickListener(new View.OnClickListener() {
+        if (null != todoItem) {
+            etName.setText(todoItem.getItemName());
+            etDescription.setText(todoItem.getItemDescription());
+        }
+
+        etName.requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        dialog.show();
+
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String itemName = mEditText.getText().toString();
-                TodoItemDb.getInstance().addOrUpdateItem(0, String.valueOf(itemName), "",
-                        "InProgress", "", "", "", 0, 0,
-                        (Category) getArguments().getParcelable("category")
-                );
-                dismiss();
+                saveItem();
             }
         });
 
+        return dialog;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
+    private void saveItem() {
+        if (TextUtils.isEmpty(etName.getText())) {
+            etName.setError("Please input item name.");
+            return;
+        }
+
+        TodoItem todoItem = getArguments().getParcelable("todoItem");
+        Category category = getArguments().getParcelable("category");
+        String name = etName.getText().toString();
+        String description = etDescription.getText().toString();
+
+        if (null != todoItem) {
+            TodoItemDb.getInstance().updateItem(todoItem.getId(), name, description);
+        } else {
+            TodoItemDb.getInstance().addItem(name, description, category);
+        }
+
+        dismiss();
+    }
 }

@@ -53,7 +53,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         String thumbUrl = "";
         if (!todoItem.getItemThumbUrl().equals("")) {
             thumbUrl = todoItem.getItemThumbUrl();
-        } else if (!todoItem.getAddress().equals("")) {
+        } else if (todoItem.getCategory().getName().equals("place") && !todoItem.getAddress().equals("")) {
             thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 200, 200, context.getString(R.string.google_api_key));
         }
         if (!thumbUrl.equals("")) {
@@ -71,8 +71,8 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         return todoItems.size();
     }
 
-    private void onItemClick(int position) {
-        TodoItem todoItem = todoItems.get(position);
+    private void onItemClick(ViewHolder holder) {
+        TodoItem todoItem = todoItems.get(holder.getLayoutPosition());
         Intent intent = new Intent(context, TodoItemActivity.class);
         intent.putExtra("id", todoItem.getId());
         context.startActivity(intent);
@@ -108,7 +108,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClick(getLayoutPosition());
+                    onItemClick(ViewHolder.this);
                 }
             });
 

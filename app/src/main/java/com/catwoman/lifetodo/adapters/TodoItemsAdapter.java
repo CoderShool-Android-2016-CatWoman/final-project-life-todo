@@ -13,7 +13,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.activities.TodoItemActivity;
 import com.catwoman.lifetodo.dbs.TodoItemDb;
@@ -56,16 +55,19 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         if (!todoItem.getItemThumbUrl().equals("")) {
             thumbUrl = todoItem.getItemThumbUrl();
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            options.inSampleSize = 8;
-            Bitmap bitmap = BitmapFactory.decodeFile(thumbUrl, options);
+
 
         } else if (!todoItem.getAddress().equals("")) {
             thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 200, 200, context.getString(R.string.google_api_key));
         }
         if (!thumbUrl.equals("")) {
-            Glide.with(context).load(thumbUrl).into(holder.ivThumb);
+            //Glide.with(context).load(thumbUrl).into(holder.ivThumb);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inSampleSize = 8;
+            Bitmap bitmap = BitmapFactory.decodeFile(thumbUrl, options);
+            holder.ivThumb.setImageBitmap(bitmap);
+            //Glide.with(context).load(bitmap).into(holder.ivThumb);
         } else {
             holder.ivThumb.setImageResource(0);
         }

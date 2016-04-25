@@ -19,8 +19,8 @@ import android.widget.ViewFlipper;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.fragments.AddPhotoFragment;
+import com.catwoman.lifetodo.interfaces.AddItemListener;
 import com.catwoman.lifetodo.models.Category;
-import com.catwoman.lifetodo.models.TodoItem;
 import com.commonsware.cwac.cam2.CameraActivity;
 import com.commonsware.cwac.cam2.Facing;
 import com.commonsware.cwac.cam2.FlashMode;
@@ -79,7 +79,8 @@ public class AddCameraActivity extends AppCompatActivity{
     private AddPhotoFragment editPhotoNameDialogFragment;
     private Realm realm;
     private Category category;
-    private TodoItem item;
+    private String imageName;
+
 
     @TargetApi(23)
     @Override
@@ -107,7 +108,6 @@ public class AddCameraActivity extends AppCompatActivity{
         utils=new RuntimePermissionUtils(this);
 
         wizardBody=(ViewFlipper)findViewById(R.id.wizard_body);
-        previous=(Button)findViewById(R.id.previous);
         next=(Button)findViewById(R.id.next);
 
         if (savedInstanceState==null) {
@@ -132,6 +132,12 @@ public class AddCameraActivity extends AppCompatActivity{
         else {
             showEditDialog();
             handlePage();
+            editPhotoNameDialogFragment.setAddItemListener(new AddItemListener() {
+                @Override
+                public void AddItem(String itemName) {
+                    imageName = itemName + ".jpg";
+                }
+            });
         }
     }
 
@@ -262,7 +268,7 @@ public class AddCameraActivity extends AppCompatActivity{
     }
 
     private void handlePortraitPage() {
-        previous.setEnabled(false);
+
         next.setEnabled(true);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,7 +299,7 @@ public class AddCameraActivity extends AppCompatActivity{
                     .skipConfirm()
                     .facing(Facing.BACK)
                     .facingExactMatch()
-                    .to(new File(testRoot, "portrait-rear.jpg"))
+                    .to(new File(testRoot, imageName))
                     .updateMediaStore()
                     .debug()
                     .debugSavePreviewFrame()
@@ -314,7 +320,7 @@ public class AddCameraActivity extends AppCompatActivity{
 
         path.setText(testZip.getAbsolutePath().substring(extRootLength + 1));
 
-        previous.setEnabled(false);
+
 
         next.setEnabled(true);
         next.setText(R.string.finish);
@@ -349,14 +355,6 @@ public class AddCameraActivity extends AppCompatActivity{
     }
 
     private void handleLandscapePage() {
-        previous.setEnabled(true);
-        previous.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                wizardBody.showPrevious();
-                handlePage();
-            }
-        });
 
         next.setEnabled(true);
         next.setOnClickListener(new View.OnClickListener() {
@@ -368,7 +366,7 @@ public class AddCameraActivity extends AppCompatActivity{
     }
 
     private void captureLandscapeRFC() {
-        previous.setEnabled(false);
+
         next.setEnabled(false);
 
         Intent i;
@@ -389,7 +387,7 @@ public class AddCameraActivity extends AppCompatActivity{
                     .skipConfirm()
                     .facing(Facing.BACK)
                     .facingExactMatch()
-                    .to(new File(testRoot, "landscape-rear.jpg"))
+                    .to(new File(testRoot, imageName))
                     .updateMediaStore()
                     .flashModes(FLASH_MODES)
                     .zoomStyle(ZoomStyle.SEEKBAR)
@@ -420,7 +418,7 @@ public class AddCameraActivity extends AppCompatActivity{
                     .skipConfirm()
                     .facing(Facing.FRONT)
                     .facingExactMatch()
-                    .to(new File(testRoot, "portrait-front.jpg"))
+                    .to(new File(testRoot, imageName))
                     .flashModes(FLASH_MODES)
                     .zoomStyle(ZoomStyle.SEEKBAR)
                     .debug()
@@ -451,7 +449,7 @@ public class AddCameraActivity extends AppCompatActivity{
                     .skipConfirm()
                     .facing(Facing.FRONT)
                     .facingExactMatch()
-                    .to(new File(testRoot, "landscape-front.jpg"))
+                    .to(new File(testRoot, imageName))
                     .updateMediaStore()
                     .flashModes(FLASH_MODES)
                     .zoomStyle(ZoomStyle.SEEKBAR)
@@ -465,7 +463,7 @@ public class AddCameraActivity extends AppCompatActivity{
 
     private void handleCompletionPage() {
         next.setEnabled(false);
-        previous.setEnabled(false);
+
         new CompleteOutputThread(this, testRoot, testZip).start();
     }
 
@@ -624,7 +622,7 @@ public class AddCameraActivity extends AppCompatActivity{
 
     private void showEditDialog() {
         FragmentManager fm = getSupportFragmentManager();
-        editPhotoNameDialogFragment = AddPhotoFragment.newInstance("",category);
+        editPhotoNameDialogFragment = AddPhotoFragment.newInstance("",testRoot.getAbsolutePath(),category);
         editPhotoNameDialogFragment.show(fm, "fragment_edit_name");
     }
 }

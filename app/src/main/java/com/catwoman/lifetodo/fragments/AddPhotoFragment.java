@@ -21,6 +21,7 @@ import com.catwoman.lifetodo.models.Category;
 public class AddPhotoFragment extends DialogFragment {
     private EditText mEditText;
     private Button mBtnSave;
+    private static String imagePath;
     private AddItemListener addItemListener;
 
     public AddPhotoFragment() {
@@ -29,12 +30,13 @@ public class AddPhotoFragment extends DialogFragment {
         // Use `newInstance` instead as shown below
     }
 
-    public static AddPhotoFragment newInstance(String title, Category category) {
+    public static AddPhotoFragment newInstance(String title,String imageFolder, Category category) {
         AddPhotoFragment frag = new AddPhotoFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
         args.putParcelable("category", category);
         frag.setArguments(args);
+        imagePath = imageFolder;
         return frag;
     }
 
@@ -68,10 +70,12 @@ public class AddPhotoFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 String itemName = mEditText.getText().toString();
-                TodoItemDb.getInstance().addOrUpdateItem(0, String.valueOf(itemName), "",
+                TodoItemDb.getInstance().addOrUpdateItem(0, String.valueOf(itemName), imagePath + "/" + itemName +".jpg",
                         "InProgress", "", "", "", 0, 0,
                         (Category) getArguments().getParcelable("category")
                 );
+                addItemListener.AddItem(itemName);
+
                 dismiss();
             }
         });

@@ -1,5 +1,9 @@
 package com.catwoman.lifetodo.fragments;
 
+/**
+ * Created by HUONGVU on 4/26/2016.
+ */
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -12,36 +16,31 @@ import android.widget.EditText;
 
 import com.catwoman.lifetodo.R;
 import com.catwoman.lifetodo.dbs.TodoItemDb;
-import com.catwoman.lifetodo.interfaces.AddItemListener;
 import com.catwoman.lifetodo.models.Category;
 
 /**
  * Created by annt on 4/9/16.
  */
-public class AddPhotoFragment extends DialogFragment {
+public class AddPhotoGalleryFragment extends DialogFragment {
     private EditText mEditText;
     private Button mBtnSave;
     private static String imagePath;
-    private AddItemListener addItemListener;
 
-    public AddPhotoFragment() {
+
+    public AddPhotoGalleryFragment() {
         // Empty constructor is required for DialogFragment
         // Make sure not to add arguments to the constructor
         // Use `newInstance` instead as shown below
     }
 
-    public static AddPhotoFragment newInstance(String title,String imageFolder, Category category) {
-        AddPhotoFragment frag = new AddPhotoFragment();
+    public static AddPhotoGalleryFragment newInstance(String title,String imageFolder, Category category) {
+        AddPhotoGalleryFragment frag = new AddPhotoGalleryFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
         args.putParcelable("category", category);
         frag.setArguments(args);
         imagePath = imageFolder;
         return frag;
-    }
-
-    public void setAddItemListener(AddItemListener addItemListener) {
-        this.addItemListener = addItemListener;
     }
 
     @Override
@@ -72,13 +71,12 @@ public class AddPhotoFragment extends DialogFragment {
                 String itemName = mEditText.getText().toString();
                 String itemThumb = "";
                 if(!imagePath.equals("")){
-                    itemThumb = imagePath + "/" + itemName.replaceAll("","_") +".jpg";
+                    itemThumb = imagePath;
                 }
                 TodoItemDb.getInstance().addOrUpdateItem(0, String.valueOf(itemName), itemThumb,
                         "InProgress", "", "", "", 0, 0,
                         (Category) getArguments().getParcelable("category")
                 );
-                addItemListener.AddItem(itemName.replaceAll("","_"));
 
                 dismiss();
             }

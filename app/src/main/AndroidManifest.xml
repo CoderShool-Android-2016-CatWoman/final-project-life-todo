@@ -58,7 +58,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.TodoItemsActivity" />
         </activity>
-        <activity android:name=".activities.AddCameraActivity"></activity>
+        <activity android:name=".activities.AddCameraActivity" />
+        <activity android:name=".activities.AddPhotoActivity"></activity>
     </application>
 
 </manifest>

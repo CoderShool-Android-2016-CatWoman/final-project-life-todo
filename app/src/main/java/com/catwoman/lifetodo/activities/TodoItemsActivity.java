@@ -140,6 +140,24 @@ public class TodoItemsActivity extends AppCompatActivity {
                 vOverlay.setVisibility(View.GONE);
             }
         });
+
+        fabAddCamera.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TodoItemsActivity.this, AddCameraActivity.class);
+                intent.putExtra("categoryId", category.getId());
+                startActivity(intent);
+            }
+        });
+
+        fabAddPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TodoItemsActivity.this, AddPhotoActivity.class);
+                intent.putExtra("categoryId", category.getId());
+                startActivity(intent);
+            }
+        });
     }
 
     private void toggleMessage() {

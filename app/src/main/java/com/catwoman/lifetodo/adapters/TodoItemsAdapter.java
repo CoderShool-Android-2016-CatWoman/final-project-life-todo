@@ -2,6 +2,8 @@ package com.catwoman.lifetodo.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,13 +52,15 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         holder.rlItem.setBackgroundColor(context.getResources().getColor(color));
         holder.tvName.setText(todoItem.getItemName());
 
-        String thumbUrl = "";
         if (!todoItem.getItemThumbUrl().equals("")) {
-            thumbUrl = todoItem.getItemThumbUrl();
+            String thumbUrl = todoItem.getItemThumbUrl();
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inSampleSize = 8;
+            Bitmap bitmap = BitmapFactory.decodeFile(thumbUrl, options);
+            holder.ivThumb.setImageBitmap(bitmap);
         } else if (todoItem.getCategory().getName().equals("place") && !todoItem.getAddress().equals("")) {
-            thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 200, 200, context.getString(R.string.google_api_key));
-        }
-        if (!thumbUrl.equals("")) {
+            String thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 200, 200, context.getString(R.string.google_api_key));
             Glide.with(context).load(thumbUrl).into(holder.ivThumb);
         } else {
             holder.ivThumb.setImageResource(0);

@@ -149,6 +149,16 @@ public class TodoItemsActivity extends AppCompatActivity {
                 showEditDialog();
             }
         });
+
+        fabAddCamera.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TodoItemsActivity.this, AddCameraActivity.class);
+                intent.putExtra("categoryId", category.getId());
+                startActivity(intent);
+            }
+        });
+
     }
 
     private void toggleMessage() {

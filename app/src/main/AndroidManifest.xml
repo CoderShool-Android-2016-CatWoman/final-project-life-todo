@@ -56,8 +56,9 @@
             android:parentActivityName=".activities.TodoItemsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.TodoItemsActivity"/>
+                android:value=".activities.TodoItemsActivity" />
         </activity>
+        <activity android:name=".activities.AddCameraActivity"></activity>
     </application>
 
 </manifest>

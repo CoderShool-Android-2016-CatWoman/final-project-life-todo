@@ -2,6 +2,8 @@ package com.catwoman.lifetodo.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +55,12 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.View
         String thumbUrl = "";
         if (!todoItem.getItemThumbUrl().equals("")) {
             thumbUrl = todoItem.getItemThumbUrl();
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inSampleSize = 8;
+            Bitmap bitmap = BitmapFactory.decodeFile(thumbUrl, options);
+
         } else if (!todoItem.getAddress().equals("")) {
             thumbUrl = MapsUtil.getStaticMapUrl(todoItem.getAddress(), 10, 200, 200, context.getString(R.string.google_api_key));
         }

@@ -4,7 +4,7 @@
 
 ## User Stories
 
-The following features will be implemented in the first version:
+The following features have been implemented in this version:
 
 * [ ]	User can manage their **todo list** - *The wish list, the favorite items, the love thing they want to do... on their life*.
   * [x] User can browse by the **category** of items.

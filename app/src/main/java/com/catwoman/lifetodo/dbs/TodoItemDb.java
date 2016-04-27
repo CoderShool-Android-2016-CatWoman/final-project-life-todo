@@ -68,6 +68,33 @@ public class TodoItemDb {
         PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
     }
 
+    public TodoItem addItem(String thumbUrl, Category category) {
+        realm.beginTransaction();
+        int id;
+        try {
+            id = realm.where(TodoItem.class).max("id").intValue() + 1;
+        } catch (Exception e) {
+            id = 1;
+        }
+        TodoItem todoItem = realm.createObject(TodoItem.class);
+        todoItem.setId(id);
+        todoItem.setCreatedTime(System.currentTimeMillis());
+        todoItem.setItemName("Untitled");
+        todoItem.setItemThumbUrl(thumbUrl);
+        todoItem.setItemStatus("InProgress");
+        todoItem.setItemDescription("");
+        todoItem.setLocation("");
+        todoItem.setAddress("");
+        todoItem.setLatitude(0);
+        todoItem.setLongitude(0);
+        todoItem.setCategory(category);
+        todoItem.setModifiedTime(System.currentTimeMillis());
+        realm.commitTransaction();
+
+        PlanDb.getInstance().updatePlansProgress(todoItem.getCategory());
+        return todoItem;
+    }
+
     public void addItem(String location, String address, double latitude, double longitude,
                         Category category) {
         realm.beginTransaction();

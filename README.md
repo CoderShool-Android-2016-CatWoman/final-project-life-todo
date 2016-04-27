@@ -6,24 +6,28 @@
 
 The following features will be implemented in the first version:
 
-* [ ]	User can login, logout, sign up.
-  * [ ]	User can login by Facebook.
 * [ ]	User can manage their **todo list** - *The wish list, the favorite items, the love thing they want to do... on their life*.
-  * [ ] User can browse by the **category** of items.
-  * [ ] User can view the **completed** items and the **not completed** items.
+  * [x] User can browse by the **category** of items.
+  * [x] User can view the **completed** items and the **not completed** items.
   * [ ] User can see the percent of completed item (*process bar on top of the list*).
-  * [ ] User can add new item by **Text**.
-  * [ ] User can add new item by **Camera**.
-  * [ ] User can add new item by **Maps** (*location*).
-  * [ ] User can simple touch to **mark as completed** an item.
-  * [ ] User can edit, delete an item.
-* [ ]	User can manage their **plans** of the todo on their life
-  * [ ] A plan is including how many items the user will do before a selected date.
-  * [ ] User can view their plan list with the **category**, **name**, **progess** and the **remaining time**.
-  * [ ] User can add, edit, delete their plans
+  * [x] User can add new item by **Text**.
+  * [x] User can add new item by **Pick Gallery**.
+  * [x] User can add new item by **Capture Image**.
+  * [x] User can add new item by **Search A Location**.
+  * [x] User can simple hold to **mark as completed** an item.
+  * [x] User can view details of an item.
+  * [x] User can view maps if item has a location.
+  * [x] User can edit, delete an item.
+* [x]	User can manage their **plans** of the todo on their life
+  * [x] A plan is including how many items the user will do before a selected date.
+  * [x] User can view their plan list with the **category**, **name**, **progess** and the **remaining time**.
+  * [x] User can view plan detail with a nice circle progress bar.
+  * [x] User can add, edit, delete their plans
 
 The following features will be comming soon in the next version:
 
+* [ ]	User can login, logout, sign up.
+  * [ ]	User can login by Facebook.
 * [ ]	User can view their profile. It will have a graph of their achievements.
 * [ ]	User can share their stories with their friends (*via Facebook, email...*)
 * [ ]	User can discover who has the same favorites. With these users:

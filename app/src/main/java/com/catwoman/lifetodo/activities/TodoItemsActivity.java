@@ -358,6 +358,8 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     public void onPickImage(View v) {
+        famAdd.collapseImmediately();
+
         Intent intent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
@@ -365,8 +367,6 @@ public class TodoItemsActivity extends AppCompatActivity {
     }
 
     private void addPickedImage(Intent data) {
-        famAdd.collapseImmediately();
-
         Uri selectedImageUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};
         CursorLoader cursorLoader = new CursorLoader(this, selectedImageUri, projection, null, null,

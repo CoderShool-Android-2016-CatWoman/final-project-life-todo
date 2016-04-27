@@ -18,15 +18,15 @@ import java.util.ArrayList;
  * one of the sections/tabs/pages.
  */
 public class HomePagerAdapter extends FragmentPagerAdapter {
-    private String[] tabTitles = {"Plans", "Categories"};
+    private String[] tabTitles = {"Categories", "Plans"};
     private ArrayList<Fragment> fragments;
 
     public HomePagerAdapter(FragmentManager fm) {
         super(fm);
 
         fragments = new ArrayList<>();
-        fragments.add(new PlansFragment());
         fragments.add(new CategoriesFragment());
+        fragments.add(new PlansFragment());
     }
 
     @Override

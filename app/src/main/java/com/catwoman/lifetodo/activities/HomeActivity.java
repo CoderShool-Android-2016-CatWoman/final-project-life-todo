@@ -38,6 +38,7 @@ public class HomeActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+        getSupportActionBar().setIcon(R.drawable.ic_action_bar);
 
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
@@ -86,7 +87,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void animateFab(int position) {
         switch (position) {
-            case 0:
+            case 1:
                 fab.show();
                 break;
             default:

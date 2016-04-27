@@ -74,6 +74,7 @@
             android:id="@+id/fabAddPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="onPickImage"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimaryLight"
             fab:fab_icon="@drawable/ic_insert_photo_white_24dp"

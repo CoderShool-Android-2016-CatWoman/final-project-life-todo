@@ -9,10 +9,15 @@
         android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_item_plan"
+        android:background="@android:color/transparent"
         android:hint="@string/label_name"
         android:paddingBottom="8dp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBorderItemPlan"/>
 
     <EditText
         android:id="@+id/etDescription"

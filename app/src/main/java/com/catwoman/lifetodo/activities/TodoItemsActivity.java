@@ -3,6 +3,7 @@ package com.catwoman.lifetodo.activities;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -56,6 +58,7 @@ public class TodoItemsActivity extends AppCompatActivity {
     private static final String APP_TAG = "LifeTodo";
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final int CAPTURE_IMAGE_REQUEST_CODE = 2;
+    private static final int PICK_IMAGE_REQUEST_CODE = 3;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.rvItems)
@@ -154,9 +157,15 @@ public class TodoItemsActivity extends AppCompatActivity {
             }
         } else if (requestCode == CAPTURE_IMAGE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                addImage();
+                addCapturedImage();
             } else { // Result was a failure
                 Log.i(TAG, "Picture wasn't taken!");
+            }
+        } else if (requestCode == PICK_IMAGE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                addPickedImage(data);
+            } else { // Result was a failure
+                Log.i(TAG, "Image wasn't picked!");
             }
         }
     }
@@ -212,15 +221,6 @@ public class TodoItemsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 TodoItemsActivityPermissionsDispatcher.showCameraWithCheck(TodoItemsActivity.this);
-            }
-        });
-
-        fabAddPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(TodoItemsActivity.this, AddPhotoActivity.class);
-                intent.putExtra("categoryId", category.getId());
-                startActivity(intent);
             }
         });
     }
@@ -350,10 +350,32 @@ public class TodoItemsActivity extends AppCompatActivity {
         return photoFileName.replaceAll(" ", "_");
     }
 
-    private void addImage() {
+    private void addCapturedImage() {
         Uri takenPhotoUri = getPhotoFileUri(photoFileName);
         String thumbUrl = takenPhotoUri.toString();
 
+        pendingEditItem = TodoItemDb.getInstance().addItem(thumbUrl, category);
+    }
+
+    public void onPickImage(View v) {
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Photo"), PICK_IMAGE_REQUEST_CODE);
+    }
+
+    private void addPickedImage(Intent data) {
+        famAdd.collapseImmediately();
+
+        Uri selectedImageUri = data.getData();
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        CursorLoader cursorLoader = new CursorLoader(this, selectedImageUri, projection, null, null,
+                null);
+        Cursor cursor = cursorLoader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+
+        String thumbUrl = cursor.getString(column_index);
         pendingEditItem = TodoItemDb.getInstance().addItem(thumbUrl, category);
     }
 }

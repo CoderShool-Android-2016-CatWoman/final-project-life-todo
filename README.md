@@ -40,6 +40,12 @@ The following features will be comming soon in the next version:
 * Images: @see /wireframes directory
 * [PopApp Preview](https://popapp.in/w/projects/5703f3db9af2a124308b410d/preview)
 
+## Video Walkthrough
+
+Here's a walkthrough of implemented user stories:
+
+*Coming Soon...*
+
 ## Authors
 
 * [An Nguyen](https://github.com/yasuosm)
